@@ -51,3 +51,20 @@ var radio = {
 		} 
 	}
 };
+
+// Modify Request Header to change UserAgent
+chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {
+	// We don't want this to affect all headers sent. Only the ones coming from the background or popup pages.
+	// All requests coming from the background or popup pages will have a Tab Id of -1. Everything else will have a browser generated Tab Id.
+		console.log(details);
+		for (var i = 0; i < details.requestHeaders.length; ++i) {
+			if (details.requestHeaders[i].name === 'User-Agent') {
+				// Format: Chrome Extension - Odyssey Radio/v[version]/[version_name]
+				details.requestHeaders[i].value = "Chrome Extension - Odyssey Radio/v" + chrome.app.getDetails().version + '/' + chrome.app.getDetails().version_name;
+				break;
+			}
+		}
+	}
+	return {requestHeaders: details.requestHeaders};
+}, {urls: ["*://listen.moe/*"]}, ["blocking", "requestHeaders"]);
+
