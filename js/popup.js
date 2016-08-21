@@ -44,11 +44,27 @@ function jetFuelCantMeltDankAnimeMemes() {
 		type: 'GET',
 		dataType: 'json',
 		success: function(data) {
+			
 			console.log(data);
-			$('#now-playing-artist').text(data.artist_name);
-			$('#now-playing-song').text(data.song_name);
+			
+			var name = '';
+
+            if(data.artist_name != '')
+                name = data.artist_name;
+
+            if(data.song_name != '')
+                if(data.artist_name == '')
+                    name = data.song_name;
+                else
+                    name = name + ' - ' + data.song_name;
+				
+			$('#now-playing-info').text('Now playing: ' + name);
 			$('#current-listeners').text(data.listeners);
-			if (data.requested_by) $('#now-playing-request').text('requested by ' + data.requested_by);
+
+			if(data.requested_by)
+				$('#now-playing-request').html('Requested by <a target="_blank" href="https://forum.listen.moe/u/' + data.requested_by + '">' + data.requested_by + '</a>');
+			else
+				$('#now-playing-request').text('');
 		}
 	});
 }
