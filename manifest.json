@@ -1,0 +1,28 @@
+{
+	"manifest_version": 2,
+
+	"name": "Odyssey Radio",
+	"description": "Anime/Japanese Radio powered by Odyssey Radio!",
+	"version": "2016.8.20.1",
+	"version_name": "1.0",
+
+	"icons": {
+		"48": "images/icon48.png",
+		"128": "images/icon.png"
+	},
+  
+	"permissions": [
+		"*://listen.moe/*",
+		"storage"
+	],
+	
+	"browser_action": {
+		"default_icon": "images/icon.png",
+		"default_popup": "popup.html"
+	},
+
+	"background": {
+		"scripts": ["js/jquery.js", "js/background.js"],
+		"persistent": true
+	}
+}
