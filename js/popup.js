@@ -27,11 +27,7 @@ chrome.storage.local.get(function(items) {
 	$('#radio-autoplay').prop('checked') ? $('#radio-autoplay').parent().css('background', '#EC1A55') : $('#radio-autoplay').parent().css('background', 'none');
 	
 	// Sets Play/Pause depending on player status
-	if ( background.radio.isPlaying() ) {
-		$('.playpause').addClass('glyphicon-pause');
-	} else {
-		$('.playpause').removeClass('glyphicon-pause');
-	}
+	background.radio.isPlaying() ? $('.playpause').addClass('glyphicon-pause') : $('.playpause').removeClass('glyphicon-pause');
 	
 	// Enable/Disable Player
 	$(document).on('click', '.playpause', function() {
