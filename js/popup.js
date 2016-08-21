@@ -1,7 +1,7 @@
 // Shortcut for chrome.extension.getBackgroundPage(). Allows me to execute background.js functions
 var background = chrome.extension.getBackgroundPage();
 
-chrome.storage.local.get(function(items) {
+background.storage.get(function(items) {
 	
 	// Get Info on Popup open
 	jetFuelCantMeltDankAnimeMemes();
