@@ -19,12 +19,8 @@ chrome.storage.local.get(function(items) {
 	
 	// Does Autoplay checkbox
 	$('#radio-autoplay').prop('checked', items.ListenMoeAutoPlay).change(function() {
-		if (this.checked == true) $(this).parent().css('background', '#EC1A55');
-		else $(this).parent().css('background', 'none');
 		background.storage.set({ListenMoeAutoPlay: this.checked});
 	});
-	
-	$('#radio-autoplay').prop('checked') ? $('#radio-autoplay').parent().css('background', '#EC1A55') : $('#radio-autoplay').parent().css('background', 'none');
 	
 	// Sets Play/Pause depending on player status
 	background.radio.isPlaying() ? $('.playpause').addClass('glyphicon-pause') : $('.playpause').removeClass('glyphicon-pause');
