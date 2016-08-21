@@ -1,0 +1,80 @@
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:300,600);
+
+* {
+    transition: color 0.5s;
+}
+
+html {
+    width: 450px;
+    margin: 0px;
+    padding: 0px;
+    color: #ffffff;
+    
+}
+
+body {
+    background: #1d1f2b;
+    /* background: url(images/centerTest.png); */
+    color: white;
+}
+
+a {
+    text-decoration: none;
+    color: #ec1a55;
+    cursor: pointer;
+}
+
+a:hover {
+    text-decoration:underline;
+}
+
+.glyphicon {
+    font-size: 20px;
+}
+
+/* === */
+
+#listenMoe { margin-bottom: 20px; margin-left: 75px; }
+#listenMoe div #now-playing { margin-top: 35px; }
+#listenMoe div #now-playing #now-playing-info, #listenMoe div #now-playing #now-playing-request { display: block; }
+#listenMoe div #now-playing #now-playing-request { margin-top: 5px; }
+#listenMoe div #listeners { position: absolute; top: 5px; right: 5px; }
+
+#listenMoe #radio-controls { margin: 20px 0px 10px 0px; text-align: center; }
+
+#listenMoe #radio-controls #radio-playpause { width: 25px; display: inline; margin-right: 15px; }
+#listenMoe #radio-controls #radio-playpause .playpause:hover { cursor: pointer; color: #EC1A55; }
+
+#listenMoe #radio-controls #radio-volume { display: inline; }
+#listenMoe #radio-controls #radio-volume #volume-slider {
+    background: #F75E7E;
+    display: inline-block;
+    height: 8px;
+    width: 200px;
+    top: -5px;
+    margin: auto;
+    border: none;
+}
+
+#listenMoe #radio-controls #radio-volume #volume-slider.ui-slider .ui-slider-range-min { background: #EC1A55; }
+#listenMoe #radio-controls #radio-volume #volume-slider.ui-slider .ui-slider-handle {
+    top: -6px;
+    height: 20px;
+    width: 20px;
+    border: 1px solid #666;
+    border-radius: 50px;
+    outline: none;
+    background: white;
+    border: none;
+}
+
+#listenMoe #radio-controls #radio-volume .glyphicon-volume-down { width: 15px; right: 9px; }
+#listenMoe #radio-controls #radio-volume .glyphicon-volume-up { left: 13px; }
+
+#listenMoe #radio-options { text-align: center; }
+
+#credit {
+    position: absolute;
+    right: 3px;
+    bottom: 2px;
+}

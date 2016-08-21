@@ -5,136 +5,52 @@
 		<script src="js/jquery-ui.min.js"></script>
 		<link href="css/jquery-ui.min.css" type="text/css" rel="stylesheet">
 		<link href="css/glyphicons.css" type="text/css" rel="stylesheet">
+		<link href="css/style.css" type="text/css" rel="stylesheet">
 		<style>
-			* {
-				transition: color 0.5s;
+			span, a, label {
+				font-weight: 300 !important;
+			    letter-spacing: 0.05em !important;
+			    font-family: 'Open Sans', sans-serif;
 			}
-		
-			html {
-				width: 450px;
-				margin: 0px;
-				padding: 0px;
-			}
-			
-			body {
-				background: #1d1f2b;
-				/* background: url(images/centerTest.png); */
-				color: white;
-			}
-			
-			a {
-				text-decoration: none;
-				color: yellow;
-			}
-			
-			a:hover {
-				color: #ec1a55;
-			}
-			
-			.glyphicon {
-				font-size: 20px;
-			}
-			
-			#listenMoe {
-				margin-bottom: 20px;
-			}
-			
-			#radio-controls {
-				margin: 10px auto;
-				text-align: center;
-			}
-			
-			#radio-playpause {
-				margin-bottom: 10px;
-			}
-			
-			#volume-slider {
-				background: #F75E7E;
-				display: inline-block;
-				height: 8px;
-				width: 200px;
-				top: -5px;
-				margin: auto;
-				border: none;
-			}
-			
-			#volume-slider.ui-slider .ui-slider-range-min {
-				background: #EC1A55;
-			}
-			
-			#volume-slider.ui-slider .ui-slider-handle {
-				top: -6px;
-				height: 20px;
-				width: 20px;
-				border: 1px solid #666;
-				border-radius: 50px;
-				outline: none;
-				background: white;
-				border: none;
-			}
-			
-			#radio-volume .glyphicon-volume-down {
-				width: 15px;
-				right: 9px;
-			}
-			
-			#radio-volume .glyphicon-volume-up {
-				left: 13px;
-			}
-
-			.playpause:hover {
-				cursor: pointer;
-				color: #EC1A55;
-			}
-			
-			#radio-options {
-				text-align: center;
-			}
-			
-			#credit {
-				position: absolute;
-				right: 3px;
-				bottom: 2px;
-			}
-			
 		</style>
 	</head>
 	<body>
 		<div id="container">
 			<section id="listenMoe">
 				<div style="text-align:center">
-					<div>
-						<span>Now Playing:</span> <span id="now-playing-artist"></span> - <span id="now-playing-song"></span> <span id="now-playing-request"></span>
+					<div id='now-playing'>
+						<span id='now-playing-info'>Now Playing:</span>
+						<span id="now-playing-request"></span>
 					</div>
-					<div style="margin-top: 10px">
+					<div id='listeners'>
 						<span>Current Listeners:</span> <span id="current-listeners"></span>
 					</div>
 				</div>
-				
+
 				<div id="radio-controls">
 					<div id="radio-playpause">
 						<span class="playpause glyphicon glyphicon-play"></span>
 					</div>
-					
+
 					<div id="radio-volume">
 						<span class="glyphicon glyphicon-volume-down"></span>
 						<div id="volume-slider"></div>
 						<span class="glyphicon glyphicon-volume-up"></span>
 					</div>
 				</div>
-				
+
 				<div id="radio-options">
 					<input type="checkbox" id="radio-autoplay" style="vertical-align:sub"> <label for="radio-autoplay">Autoplay on Chrome Start</label>
 				</div>
 			</section>
-			
+
 			<div id="credit">Powered By <a href="https://listen.moe" target="_blank">Odyssey Radio</a></div>
 
 			<img src="images/rem.gif" height="120" style="position:absolute;bottom:0">
-			
+
 		</div>
-		
+
 		<script src="js/popup.js"></script>
-		
+
 	</body>
 </html>
