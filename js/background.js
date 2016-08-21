@@ -56,6 +56,7 @@ var radio = {
 chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {
 	// We don't want this to affect all headers sent. Only the ones coming from the background or popup pages.
 	// All requests coming from the background or popup pages will have a Tab Id of -1. Everything else will have a browser generated Tab Id.
+	if (details.tabId === -1) {
 		console.log(details);
 		for (var i = 0; i < details.requestHeaders.length; ++i) {
 			if (details.requestHeaders[i].name === 'User-Agent') {
