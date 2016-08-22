@@ -64,7 +64,7 @@ if (typeof InstallTrigger === 'undefined') { // Not Firefox :D
 			for (var i = 0; i < details.requestHeaders.length; ++i) {
 				if (details.requestHeaders[i].name === 'User-Agent') {
 					// Format: Chrome Extension - Odyssey Radio/v[version]/[version_name]
-					details.requestHeaders[i].value = "Chrome Extension - Odyssey Radio/v" + chrome.app.getDetails().version + '/' + chrome.app.getDetails().version_name;
+					details.requestHeaders[i].value = "Chrome Extension - Odyssey Radio/v" + chrome.runtime.getManifest().version + '/' + chrome.runtime.getManifest().version_name;
 					break;
 				}
 			}
