@@ -14,6 +14,6 @@
 - Made CSS changes that @kanadeko requested
 - Made some ajustments to the JS to accommodate the CSS changes
 
-#### v2016.8.20.1
+### v2016.8.20.1
 
 - Inital Release
