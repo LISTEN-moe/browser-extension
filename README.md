@@ -2,6 +2,12 @@
 
 ## Changelog
 
+### v2016.8.22.1
+
+- Firefox Compatibility
+
+  Requires Firefox version 48 or higher
+
 ### v2016.8.21.2
 
 - Added webRequest and webRequestBlocking permissions
