@@ -19,7 +19,7 @@
 	],
 	
 	"browser_action": {
-		"browser_style": false,
+		"browser_style": false, 
 		"default_icon": "images/icon48.png",
 		"default_popup": "popup.html"
 	},
