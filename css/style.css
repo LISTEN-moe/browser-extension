@@ -4,18 +4,19 @@
     transition: color 0.5s;
 }
 
-html {
+html, body {
     width: 450px;
     margin: 0px;
     padding: 0px;
     color: #ffffff;
-    
+     /* Required for Firefox */
+	font-family: "Segoe UI", Tahoma, sans-serif;
+	font-size: 12px;
 }
 
 body {
     background: #1d1f2b;
     /* background: url(images/centerTest.png); */
-    color: white;
 }
 
 a {
@@ -36,7 +37,7 @@ a:hover {
 
 #listenMoe { margin-bottom: 20px; margin-left: 75px; }
 #listenMoe div #now-playing { margin-top: 35px; }
-#listenMoe div #now-playing #now-playing-info, #listenMoe div #now-playing #now-playing-request { display: block; }
+#listenMoe div #now-playing #now-playing-info, #listenMoe div #now-playing #now-playing-request { display: block; padding-right: 5px; }
 #listenMoe div #now-playing #now-playing-request { margin-top: 5px; }
 #listenMoe div #listeners { position: absolute; top: 5px; right: 5px; }
 
