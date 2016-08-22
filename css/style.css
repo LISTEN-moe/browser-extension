@@ -39,7 +39,7 @@ a:hover {
 
 /* === */
 
-#listenMoe { margin-bottom: 20px; margin-left: 75px; }
+#listenMoe { margin-bottom: 25px; margin-left: 75px; }
 #listenMoe div #now-playing { margin-top: 35px; }
 #listenMoe div #now-playing #now-playing-info, #listenMoe div #now-playing #now-playing-request { display: block; padding-right: 5px; }
 #listenMoe div #now-playing #now-playing-request { margin-top: 5px; }
