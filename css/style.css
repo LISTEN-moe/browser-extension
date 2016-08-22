@@ -9,7 +9,7 @@ html, body {
     margin: 0px;
     padding: 0px;
     color: #ffffff;
-     /* Required for Firefox */
+	/* Required for Firefox */
 	font-family: "Segoe UI", Tahoma, sans-serif;
 	font-size: 12px;
 }
