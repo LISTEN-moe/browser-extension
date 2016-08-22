@@ -52,20 +52,30 @@ var radio = {
 	}
 };
 
+// Firefox check - typeof InstallTrigger !== 'undefined' - true if Firefox. false if not.
+
 // Modify Request Header to change UserAgent
-chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {
-	// We don't want this to affect all headers sent. Only the ones coming from the background or popup pages.
-	// All requests coming from the background or popup pages will have a Tab Id of -1. Everything else will have a browser generated Tab Id.
-	if (details.tabId === -1) {
-		console.log(details);
-		for (var i = 0; i < details.requestHeaders.length; ++i) {
-			if (details.requestHeaders[i].name === 'User-Agent') {
-				// Format: Chrome Extension - Odyssey Radio/v[version]/[version_name]
-				details.requestHeaders[i].value = "Chrome Extension - Odyssey Radio/v" + chrome.app.getDetails().version + '/' + chrome.app.getDetails().version_name;
-				break;
+if (typeof InstallTrigger === 'undefined') { // Not Firefox :D
+	chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {
+		// We don't want this to affect all headers sent. Only the ones coming from the background or popup pages.
+		// All requests coming from the background or popup pages will have a Tab Id of -1. Everything else will have a browser generated Tab Id.
+		if (details.tabId === -1) {
+			console.log(details);
+			for (var i = 0; i < details.requestHeaders.length; ++i) {
+				if (details.requestHeaders[i].name === 'User-Agent') {
+					// Format: Chrome Extension - Odyssey Radio/v[version]/[version_name]
+					details.requestHeaders[i].value = "Chrome Extension - Odyssey Radio/v" + chrome.app.getDetails().version + '/' + chrome.app.getDetails().version_name;
+					break;
+				}
 			}
 		}
-	}
-	return {requestHeaders: details.requestHeaders};
-}, {urls: ["*://listen.moe/*"]}, ["blocking", "requestHeaders"]);
-
+		return {requestHeaders: details.requestHeaders};
+	}, {urls: ["*://listen.moe/*"]}, ["blocking", "requestHeaders"]);
+} else { // Firefox D:
+	/* Can't listen for request that come from background and popup pages apparently. :( 
+	chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {
+		console.debug(details);
+		//console.debug("Firefox WebExtension - Odyssey Radio/v" + chrome.runtime.getManifest().version);
+	}, {urls: ["*://listen.moe/*"]}, ["blocking", "requestHeaders"]); 
+	*/
+}
