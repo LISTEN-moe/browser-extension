@@ -1,6 +1,9 @@
 // Shortcut for chrome.extension.getBackgroundPage(). Allows me to execute background.js functions
 var background = chrome.extension.getBackgroundPage();
 
+// Sets "Chrome" or "Firefox" depending on the browser
+typeof InstallTrigger === 'undefined' ? $('#browser').text('Chrome') : $('#browser').text('Firefox');
+
 background.storage.get(function(items) {
 	
 	// Get Info on Popup open
