@@ -4,39 +4,46 @@ var background = chrome.extension.getBackgroundPage();
 // Sets "Chrome" or "Firefox" depending on the browser
 typeof InstallTrigger === 'undefined' ? $('#browser').text('Chrome') : $('#browser').text('Firefox');
 
-background.storage.get(function(items) {
-	
-	// Get Info on Popup open
-	jetFuelCantMeltDankAnimeMemes();
+// Get Info on Popup open
+jetFuelCantMeltDankAnimeMemes();
 
-	// Set Interval to check for updated info every 10 seconds
-	var listenMoe_NowPlaying = setInterval(jetFuelCantMeltDankAnimeMemes, 10000);
-	
-	// Initialize Volume Slider
-	$('#volume-slider').slider({
-		min: 0, max: 100, range: 'min', value: background.radio.getVol(),
-		slide: function(event, ui) {
-			background.radio.setVol(ui.value);
-		}
-	});
-	
+// Set Interval to check for updated info every 10 seconds
+var listenMoe_NowPlaying = setInterval(jetFuelCantMeltDankAnimeMemes, 10000);
+
+// Initialize Volume Slider
+$('#volume-slider').slider({
+	min: 0, max: 100, range: 'min', value: background.radio.getVol(),
+	slide: function(event, ui) {
+		background.radio.setVol(ui.value);
+	}
+});
+
+// Sets Play/Pause depending on player status
+if (background.radio.isPlaying()) $('.playpause').addClass('glyphicon-pause');
+
+// Enable/Disable Player
+$(document).on('click', '.playpause', function() {
+	if ( background.radio.isPlaying() ) {
+		$('.playpause').removeClass('glyphicon-pause');
+		background.radio.disable();
+	} else {
+		$('.playpause').addClass('glyphicon-pause');
+		background.radio.enable();
+	}
+});
+
+// Automatically changes the Play/Pause icon in the case the Player status changes.
+$(background.player).on('play error', function(e) {
+	if (e.type == 'play')
+		$('.playpause').addClass('glyphicon-pause');
+	else if (e.type == 'error')
+		$('.playpause').removeClass('glyphicon-pause');
+});
+
+background.storage.get(function(items) {
 	// Does Autoplay checkbox
 	$('#radio-autoplay').prop('checked', items.ListenMoeAutoPlay).change(function() {
 		background.storage.set({ListenMoeAutoPlay: this.checked});
-	});
-	
-	// Sets Play/Pause depending on player status
-	background.radio.isPlaying() ? $('.playpause').addClass('glyphicon-pause') : $('.playpause').removeClass('glyphicon-pause');
-	
-	// Enable/Disable Player
-	$(document).on('click', '.playpause', function() {
-		if ( background.radio.isPlaying() ) {
-			$('.playpause').removeClass('glyphicon-pause');
-			background.radio.disable();
-		} else {
-			$('.playpause').addClass('glyphicon-pause');
-			background.radio.enable();
-		}
 	});
 });
 
