@@ -14,8 +14,12 @@ html, body {
 	font-size: 12px;
 }
 
+@-moz-document url-prefix() {
+    body { border: 1px solid; }
+}
+
 body {
-    background: #1d1f2b;
+    background-color: #1d1f2b;
     /* background: url(images/centerTest.png); */
 }
 
