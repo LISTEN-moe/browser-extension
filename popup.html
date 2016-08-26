@@ -2,13 +2,13 @@
 <html>
 	<head>
 		<meta charset="utf-8"/> <!-- Firefox throws some errors without this. nothing game breaking. it was just annoying me -->
-		<script src="js/jquery.js"></script>
+		<script src="js/jquery-3.1.0.min.js"></script>
 		<script src="js/jquery-ui.min.js"></script>
 		<link href="css/jquery-ui.min.css" type="text/css" rel="stylesheet">
 		<link href="css/glyphicons.css" type="text/css" rel="stylesheet">
 		<link href="css/style.css" type="text/css" rel="stylesheet">
 		<style>
-			span, a, label {
+			div, span, a, label {
 				font-weight: 300 !important;
 			    letter-spacing: 0.05em !important;
 			    font-family: 'Open Sans', sans-serif;
@@ -20,8 +20,8 @@
 			<section id="listenMoe">
 				<div style="text-align:center">
 					<div id='now-playing'>
-						<span id='now-playing-info'>Now Playing:</span>
-						<span id="now-playing-request"></span>
+						<div id='now-playing-info'>Now Playing:</div>
+						<div id="now-playing-request">Requested by <a id="request-username" target="_blank"></a></div>
 					</div>
 					<div id='listeners'>
 						<span>Current Listeners:</span> <span id="current-listeners"></span>
@@ -38,16 +38,21 @@
 						<div id="volume-slider"></div>
 						<span class="glyphicon glyphicon-volume-up"></span>
 					</div>
+					
+					<div id="radio-favorite">
+						<span class="toggle-favorite glyphicon glyphicon-star glyphicon-star-empty"></span>
+					</div>
+					
 				</div>
 
 				<div id="radio-options">
-					<input type="checkbox" id="radio-autoplay" style="vertical-align:sub"> <label for="radio-autoplay">Autoplay on <span id="browser"></span> Start</label>
+					<input type="checkbox" id="radio-autoplay" style="vertical-align:sub"> <label for="radio-autoplay">Autoplay on Browser Start</label>
 				</div>
 			</section>
 
 			<div id="credit">Powered By <a href="https://listen.moe" target="_blank">Odyssey Radio</a></div>
 
-			<img src="images/rem.gif" height="150" style="position:absolute;bottom:0">
+			<img id="rem" src="images/rem.gif">
 
 		</div>
 		<script src="js/popup.js"></script>

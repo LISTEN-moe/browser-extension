@@ -17,12 +17,6 @@ var radio = {
 	disable: function() {
 		player.setAttribute('src', '');
 	},
-	play: function() { // Probably not going to be used.
-		player.getAttribute('src') ? player.play() : console.error('Player not initialized! Enable player first!');
-	},
-	pause: function() { // Probably not going to be used. Pausing the stream will cause the audio to be behind and no longer "live".
-		player.getAttribute('src') ? player.pause() : console.error('Player not initialized! Enable player first!');
-	},
 	isPlaying: function() {
 		return player.paused ? false : true;
 	},
@@ -41,41 +35,55 @@ var radio = {
 	},
 	getVol: function() {
 		return player.volume * 100;
-	},
-	autoPlay: function(a) { // Probably not going to be used.
-		if (typeof a !== 'undefined') {
-			player.setAttribute('autoPlay', a);
-		} else {
-			console.error('True | False Required!');
-			return;
-		} 
 	}
 };
 
-// Firefox check - typeof InstallTrigger !== 'undefined' - true if Firefox. false if not.
+// Saves history
+var historyInterval = setInterval(function() {
+	if (radio.isPlaying()) {
+		$.ajax({
+			url: 'https://listen.moe/stats.json',
+			type: 'GET',
+			dataType: 'json',
+			success: function(data) {
+				storage.get(function(items) {
+					if (items.history) {
+						var lastEntry = items.history[items.history.length - 1];
+						if (lastEntry.artist === data.artist_name && lastEntry.song === data.song_name)
+							console.log('We good. Still the same song.');
+						else {
+							items.history.push({ artist: data.artist_name, song: data.song_name });
+							if (items.history.length > 10) items.history = items.history.splice(-10); // If more than 10 in history, only keep the last 10.
+							storage.set({history: items.history});
+							console.log(items.history);
+						}
+					} else {
+						storage.set({
+							history: [{
+								artist: data.artist_name,
+								song: data.song_name
+							}]
+						});
+					}
+				});
+			}
+		});
+	}
+}, 20000); // Every 20 Seconds so I don't kill the server. This doesn't to to be as updated.
 
 // Modify Request Header to change UserAgent
-if (typeof InstallTrigger === 'undefined') { // Not Firefox :D
+if (typeof InstallTrigger === 'undefined') {
 	chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {
 		// We don't want this to affect all headers sent. Only the ones coming from the background or popup pages.
 		// All requests coming from the background or popup pages will have a Tab Id of -1. Everything else will have a browser generated Tab Id.
 		if (details.tabId === -1) {
-			console.log(details);
 			for (var i = 0; i < details.requestHeaders.length; ++i) {
 				if (details.requestHeaders[i].name === 'User-Agent') {
-					// Format: Chrome Extension - Odyssey Radio/v[version]/[version_name]
-					details.requestHeaders[i].value = "Chrome Extension - Odyssey Radio/v" + chrome.runtime.getManifest().version + '/' + chrome.runtime.getManifest().version_name;
+					details.requestHeaders[i].value = "Chrome Extension - Odyssey Radio/v" + chrome.runtime.getManifest().version;
 					break;
 				}
 			}
 		}
 		return {requestHeaders: details.requestHeaders};
 	}, {urls: ["*://listen.moe/*"]}, ["blocking", "requestHeaders"]);
-} else { // Firefox D:
-	/* Can't listen for request that come from background and popup pages apparently. :( 
-	chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {
-		console.debug(details);
-		//console.debug("Firefox WebExtension - Odyssey Radio/v" + chrome.runtime.getManifest().version);
-	}, {urls: ["*://listen.moe/*"]}, ["blocking", "requestHeaders"]); 
-	*/
 }

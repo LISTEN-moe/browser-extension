@@ -4,8 +4,17 @@
     transition: color 0.5s;
 }
 
+@-webkit-keyframes spin {
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
 html, body {
-    width: 450px;
+    width: 460px;
     margin: 0px;
     padding: 0px;
     color: #ffffff;
@@ -39,16 +48,21 @@ a:hover {
 
 /* === */
 
-#listenMoe { margin-bottom: 25px; margin-left: 75px; }
+#listenMoe { margin-bottom: 25px; margin-left: 80px; }
 #listenMoe div #now-playing { margin-top: 35px; }
-#listenMoe div #now-playing #now-playing-info, #listenMoe div #now-playing #now-playing-request { display: block; padding-right: 5px; }
-#listenMoe div #now-playing #now-playing-request { margin-top: 5px; }
+#listenMoe div #now-playing #now-playing-info, #listenMoe div #now-playing #now-playing-request { padding-right: 5px; }
+#listenMoe div #now-playing #now-playing-request { display: none; margin-top: 5px; }
 #listenMoe div #listeners { position: absolute; top: 5px; right: 5px; }
 
-#listenMoe #radio-controls { margin: 20px 0px 10px 0px; text-align: center; }
+#listenMoe #radio-controls { margin: 10px 0px 10px 0px; text-align: center; }
 
 #listenMoe #radio-controls #radio-playpause { width: 25px; display: inline; margin-right: 15px; }
 #listenMoe #radio-controls #radio-playpause .playpause:hover { cursor: pointer; color: #EC1A55; }
+
+#listenMoe #radio-controls #radio-playpause .glyphicon-refresh { animation: spin 2s infinite linear; }
+
+#listenMoe #radio-controls #radio-favorite { display: inline; margin-left: 20px; }
+#listenMoe #radio-controls #radio-favorite .toggle-favorite:hover { cursor: pointer; color: #EC1A55 }
 
 #listenMoe #radio-controls #radio-volume { display: inline; }
 #listenMoe #radio-controls #radio-volume #volume-slider {
@@ -82,4 +96,11 @@ a:hover {
     position: absolute;
     right: 3px;
     bottom: 2px;
+}
+
+#rem {
+	height: 145px;
+	position: absolute;
+	bottom: 0px;
+	left: 5px;
 }
