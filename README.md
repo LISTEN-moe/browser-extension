@@ -2,6 +2,13 @@
 
 ## Changelog
 
+### v2016.8.26.1
+
+- Minor CSS changes.
+- Removed most console.logs()
+- Made changes to how the "Requested by" appears. No longer using jQuery.html() since it posed as a major security risk.
+- Base for History and Favorites features.
+
 ### v2016.8.22.1
 
 - Firefox Compatibility
