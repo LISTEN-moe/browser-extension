@@ -22,4 +22,4 @@
 
 ### v2016.8.20.1
 
-- Inital Release
+- Initial Release
