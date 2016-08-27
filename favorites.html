@@ -7,41 +7,9 @@
 		<script src="js/jquery-3.1.0.min.js"></script>
 		<script src="js/jquery-ui.min.js"></script>
 		<link href="css/jquery-ui.min.css" type="text/css" rel="stylesheet">
+		<link href="css/favorites.css" type="text/css" rel="stylesheet">
 		<link href="css/glyphicons.css" type="text/css" rel="stylesheet">
-		<style>
-			@import url(https://fonts.googleapis.com/css?family=Open+Sans:300,600);
-
-			html, body {
-				color: #ffffff;
-				/* Required for Firefox */
-				font-family: "Comic Sans MS", Tahoma, sans-serif; /* See I'm even using Comic Sans to show you that this isn't to be used by the user. */
-				font-size: 12px;
-				line-height: 20px;
-			}
-
-			body {
-				background-color: #1d1f2b;
-			}
-
-			a {
-				text-decoration: none;
-				color: #ec1a55;
-				cursor: pointer;
-			}
-
-			a:hover {
-				text-decoration:underline;
-			}
-
-			.glyphicon {
-				font-size: 20px;
-			}
-			
-			div, span, a, label {
-				font-weight: 300 !important;
-			    letter-spacing: 0.05em !important;
-			}
-		</style>
+		
 	</head>
 	<body>
 		<h1>Favorites</h1>
@@ -53,10 +21,33 @@
 					<input type="radio" id="song-radio" value="song" name="search"> <label for="song-radio">Song</label>
 					<input type="text" id="text-search">
 				</div>
-				<div id="favorites-list"></div>
+				<table id="favorites-list">
+					<tbody>
+						<tr>
+							<th width="4%">#</th>
+							<th width="50%">Artist Name</th>
+							<th width="50%">Song Title</th>
+							<th width="50%"></th>
+						</tr>
+					</tbody>
+				</table>
 			</div>
 		</div>
 	
 		<script src="js/favorites.js"></script>
 	</body>
 <html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
