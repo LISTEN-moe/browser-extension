@@ -24,20 +24,6 @@ background.storage.get(function(items) {
 		});
 	});
 	
-	/* $('#text-search').on('keyup', function() {
-		$('#favorites-list').empty();
-		$.each(search( $('[name="search"]:checked').val(), this.value ), function(index, value) {
-			$('#favorites-list').append('<div>['+ ('0' + index).slice(-2) + '] ' + value.artist + ' - ' + value.song +'</div>');
-		});
-	}); */
-	
-	/* $('[name="search"]').change(function() {
-		$('#favorites-list').empty();
-		$.each(search( this.value, $('#text-search').val() ), function(index, value) {
-			$('#favorites-list').append('<div>['+ ('0' + index).slice(-2) + '] ' + value.artist + ' - ' + value.song +'</div>');
-		});
-	}); */
-	
 	function search(type, value) {
 		if (typeof type !== 'undefined' && typeof value !== 'undefined') {
 			if (type === 'artist') {
