@@ -31,45 +31,38 @@ var radio = {
 			}
 		} else {
 			throw Error('Numerical Value Required!');
-		} 
+		}
 	},
 	getVol: function() {
 		return player.volume * 100;
 	}
 };
 
-// Saves history
-var historyInterval = setInterval(function() {
-	if (radio.isPlaying()) {
-		$.ajax({
-			url: 'https://listen.moe/stats.json',
-			type: 'GET',
-			dataType: 'json',
-			success: function(data) {
-				storage.get(function(items) {
-					if (items.history) {
-						var lastEntry = items.history[items.history.length - 1];
-						if (lastEntry.artist === data.artist_name && lastEntry.song === data.song_name)
-							console.log('We good. Still the same song.');
-						else {
-							items.history.push({ artist: data.artist_name, song: data.song_name });
-							if (items.history.length > 10) items.history = items.history.splice(-10); // If more than 10 in history, only keep the last 10.
-							storage.set({history: items.history});
-							console.log(items.history);
-						}
-					} else {
-						storage.set({
-							history: [{
-								artist: data.artist_name,
-								song: data.song_name
-							}]
-						});
-					}
-				});
+// Saves History of Songs Played
+var source = new EventSource('https://listen.moe/api/info');
+source.addEventListener('data', function(e) {
+	var data = JSON.parse(e.data);
+	storage.get(function(items) {
+		if (items.history) {
+			var lastEntry = items.history[items.history.length - 1];
+			if (lastEntry.artist === data.artist_name && lastEntry.song === data.song_name) {
+				//console.log('We good. Still the same song.');
+			} else {
+				items.history.push({ artist: data.artist_name, song: data.song_name });
+				if (items.history.length > 20) items.history = items.history.splice(-20); // If more than 10 in history, only keep the last 10.
+				storage.set({history: items.history});
+				//console.log(items.history);
 			}
-		});
-	}
-}, 20000); // Every 20 Seconds so I don't kill the server. This doesn't to to be as updated.
+		} else {
+			storage.set({
+				history: [{
+					artist: data.artist_name,
+					song: data.song_name
+				}]
+			});
+		}
+	});
+});
 
 // Modify Request Header to change UserAgent
 if (typeof InstallTrigger === 'undefined') {

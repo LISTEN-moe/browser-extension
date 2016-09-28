@@ -1,49 +1,49 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:300,600);
 
 * {
-    transition: color 0.5s;
+  transition: color 0.5s;
 }
 
 @-webkit-keyframes spin {
-    from {
-        -webkit-transform: rotate(0deg);
-    }
-    to {
-        -webkit-transform: rotate(360deg);
-    }
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
 }
 
 html, body {
-    width: 460px;
-    margin: 0px;
-    padding: 0px;
-    color: #ffffff;
+  width: 460px;
+  margin: 0px;
+  padding: 0px;
+  color: #ffffff;
 	/* Required for Firefox */
 	font-family: "Segoe UI", Tahoma, sans-serif;
 	font-size: 12px;
 }
 
 @-moz-document url-prefix() {
-    body { border: 1px solid; }
+  body { border: 1px solid; }
 }
 
 body {
-    background-color: #1d1f2b;
-    /* background: url(images/centerTest.png); */
+  background-color: #1d1f2b;
+  /* background: url(images/centerTest.png); */
 }
 
 a {
-    text-decoration: none;
-    color: #ec1a55;
-    cursor: pointer;
+  text-decoration: none;
+  color: #ec1a55;
+  cursor: pointer;
 }
 
 a:hover {
-    text-decoration:underline;
+  text-decoration: underline;
 }
 
 .glyphicon {
-    font-size: 20px;
+  font-size: 20px;
 }
 
 /* === */
@@ -52,6 +52,7 @@ a:hover {
 #listenMoe div #now-playing { margin-top: 35px; }
 #listenMoe div #now-playing #now-playing-info, #listenMoe div #now-playing #now-playing-request { padding-right: 5px; }
 #listenMoe div #now-playing #now-playing-request { display: none; margin-top: 5px; }
+#listenMoe div #now-playing #now-playing-request #request-username { font-weight: bold !important; }
 #listenMoe div #listeners { position: absolute; top: 5px; right: 5px; }
 
 #listenMoe #radio-controls { margin: 10px 0px 10px 0px; text-align: center; }
@@ -92,9 +93,15 @@ a:hover {
 
 #listenMoe #radio-options { text-align: center; }
 
+#favs {
+	position: absolute;
+	left: 105px;
+	bottom: 2px;
+}
+
 #credit {
     position: absolute;
-    right: 3px;
+    right: 5px;
     bottom: 2px;
 }
 
