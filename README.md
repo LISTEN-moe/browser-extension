@@ -2,6 +2,11 @@
 
 ## Changelog
 
+### v2016.9.28.1
+
+- Commented out a few console.logs
+- Added LISTEN.moe Favorites support into the extension
+
 ### v2016.8.26.1
 
 - Minor CSS changes.
