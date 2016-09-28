@@ -7,7 +7,7 @@ $(function() {
 	source.addEventListener('data', function(e) {
 
 	  var data = JSON.parse(e.data);
-		console.log(data);
+		//console.log(data);
 
 		$('#current-listeners').text(data.listeners);
 
