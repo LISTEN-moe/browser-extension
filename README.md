@@ -5,6 +5,8 @@
 ### v2016.9.28.1
 
 - Commented out a few console.logs
+- Minor CSS changes
+- No longer using setInterval to check for stats.json changes. Site is now using SSE.
 - Added LISTEN.moe Favorites support into the extension
 
 ### v2016.8.26.1
