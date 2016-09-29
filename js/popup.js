@@ -3,7 +3,7 @@ var background = chrome.extension.getBackgroundPage();
 
 $(function() {
 
-	var source = new EventSource('https://listen.moe/api/info');
+	var source = new EventSource('https://listen.moe/api/info/sse');
 	source.addEventListener('data', function(e) {
 
 	  var data = JSON.parse(e.data);

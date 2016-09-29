@@ -39,7 +39,7 @@ var radio = {
 };
 
 // Saves History of Songs Played
-var source = new EventSource('https://listen.moe/api/info');
+var source = new EventSource('https://listen.moe/api/info/sse');
 source.addEventListener('data', function(e) {
 	var data = JSON.parse(e.data);
 	storage.get(function(items) {
