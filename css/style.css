@@ -24,12 +24,13 @@ html, body {
 }
 
 @-moz-document url-prefix() {
-  body { border: 1px solid; }
+  body {
+		border: 1px solid;
+	}
 }
 
 body {
   background-color: #1d1f2b;
-  /* background: url(images/centerTest.png); */
 }
 
 a {
@@ -44,11 +45,141 @@ a:hover {
 
 .glyphicon {
   font-size: 20px;
+	-webkit-user-select: none;
+  -moz-user-select: none;
 }
 
-/* === */
+/* == Listener Count == */
 
-#listenMoe { margin-bottom: 25px; margin-left: 80px; }
+#listeners {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+}
+
+/* == Container == */
+
+#listenMoe {
+	margin-bottom: 30px;
+	margin-left: 80px;
+	margin-top: 35px;
+}
+
+/* == Now Playing Info == */
+
+#now-playing #now-playing-info,
+#now-playing #now-playing-request {
+	padding-right: 5px;
+}
+
+#now-playing #now-playing-request {
+	display: none;
+	margin-top: 5px;
+}
+
+#now-playing #now-playing-request #request-username {
+	font-weight: bold !important;
+}
+
+/* == Radio Controls Container == */
+
+#radio-controls {
+	margin: 10px 0px 10px 0px;
+	text-align: center;
+}
+
+/* == Play/Pause Button == */
+
+#radio-controls #radio-playpause {
+	width: 25px;
+	display: inline;
+	margin-right: 15px;
+}
+
+#radio-controls #radio-playpause .playpause:hover {
+	cursor: pointer;
+	color: #EC1A55;
+}
+
+#radio-controls #radio-playpause .glyphicon-refresh {
+	animation: spin 2s infinite linear;
+}
+
+/* == Favorites Button == */
+
+#radio-controls #radio-favorite {
+	display: inline;
+	margin-left: 20px;
+}
+
+#radio-controls #radio-favorite .toggle-favorite:hover {
+	cursor: pointer;
+	color: #EC1A55;
+}
+
+.favorite-button {
+	width: 64px;
+  height: 64px;
+  background: url(../images/fav_sprite.png) no-repeat;
+  background-position: 0 0;
+  position: absolute;
+  top: -7px;
+  left: -7px;
+  transform: scale(.75, .75);
+}
+
+.favorite-button.activated {
+  background-position: -3519px 0;
+  transition: background 1s steps(55);
+}
+
+/* == Volume Slider == */
+
+#radio-controls #radio-volume {
+	display: inline;
+}
+
+#radio-controls #radio-volume #volume-slider {
+  background: #F75E7E;
+  display: inline-block;
+  height: 8px;
+  width: 200px;
+  top: -5px;
+  margin: auto;
+  border: none;
+}
+
+#radio-controls #radio-volume #volume-slider.ui-slider .ui-slider-range-min {
+	background: #EC1A55;
+}
+
+#radio-controls #radio-volume #volume-slider.ui-slider .ui-slider-handle {
+  top: -6px;
+  height: 20px;
+  width: 20px;
+  border: 1px solid #666;
+  border-radius: 50px;
+  outline: none;
+  background: white;
+  border: none;
+}
+
+#radio-controls #radio-volume .glyphicon-volume-down {
+	width: 15px;
+	right: 9px;
+}
+
+#radio-controls #radio-volume .glyphicon-volume-up {
+	left: 13px;
+}
+
+/* == Radio Options == */
+
+#listenMoe #radio-options {
+	text-align: center;
+}
+
+/*#listenMoe { margin-bottom: 25px; margin-left: 80px; }
 #listenMoe div #now-playing { margin-top: 35px; }
 #listenMoe div #now-playing #now-playing-info, #listenMoe div #now-playing #now-playing-request { padding-right: 5px; }
 #listenMoe div #now-playing #now-playing-request { display: none; margin-top: 5px; }
@@ -91,7 +222,7 @@ a:hover {
 #listenMoe #radio-controls #radio-volume .glyphicon-volume-down { width: 15px; right: 9px; }
 #listenMoe #radio-controls #radio-volume .glyphicon-volume-up { left: 13px; }
 
-#listenMoe #radio-options { text-align: center; }
+#listenMoe #radio-options { text-align: center; }*/
 
 #favs {
 	position: absolute;
@@ -100,9 +231,9 @@ a:hover {
 }
 
 #credit {
-    position: absolute;
-    right: 5px;
-    bottom: 2px;
+  position: absolute;
+  right: 5px;
+  bottom: 2px;
 }
 
 #rem {
@@ -110,4 +241,14 @@ a:hover {
 	position: absolute;
 	bottom: 0px;
 	left: 5px;
+}
+
+#ram_rem {
+	height: 145px;
+  width: 72px;
+  background-size: cover;
+  position: absolute;
+  bottom: 0px;
+  left: 5px;
+  background-position-x: 4px;
 }
