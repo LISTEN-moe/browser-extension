@@ -1,44 +1,19 @@
 // Shortcut for chrome.extension.getBackgroundPage(). Allows me to execute background.js functions
 var background = chrome.extension.getBackgroundPage();
 
+var auth_token;
+
+background.storage.get(function(items) {
+	auth_token = items.auth_token;
+});
+
 $(function() {
 
-	var source = new EventSource('https://listen.moe/api/info/sse');
-	source.addEventListener('data', function(e) {
+	// Get Info on Popup open
+ jetFuelCantMeltDankAnimeMemes();
 
-	  var data = JSON.parse(e.data);
-		//console.log(data);
-
-		$('#current-listeners').text(data.listeners);
-
-		var name = '';
-
-    if (data.artist_name != '')
-        name = data.artist_name;
-
-    if (data.song_name != '')
-        if (data.artist_name == '')
-            name = data.song_name;
-    			else
-    				name = name + ' - ' + data.song_name;
-
-		$('#now-playing-info').text('Now playing: ' + name);
-
-		if (data.requested_by) {
-			$('#now-playing-request').show();
-			$('#request-username').prop('href', 'https://forum.listen.moe/u/' + data.requested_by).text(data.requested_by);
-		} else {
-			$('#now-playing-request').hide();
-			$('#request-username').prop('href', '').text('');
-		}
-
-		//Favorites
-		if (auth_token) {
-			$('.toggle-favorite').attr('data-song_id', data.song_id);
-			favorites.check(auth_token, data.song_id);
-		}
-
-	});
+ //Set Interval to check for updated info every 10 seconds
+ setInterval(jetFuelCantMeltDankAnimeMemes, 10000);
 
 	// Initialize Volume Slider
 	$('#volume-slider').slider({
@@ -71,44 +46,79 @@ $(function() {
 
 	// Handles Play/Pause icons. Changes icon depending on the player status.
 	$(background.player).on('play abort loadstart', function(e) {
+		console.log(e.type);
 		if (e.type === 'play') {
 			$('.playpause')
 				.removeClass('glyphicon-play')
 				.removeClass('glyphicon-refresh')
 				.addClass('glyphicon-pause');
-		} else if (e.type === 'abort') {
-			$('.playpause')
-				.removeClass('glyphicon-pause')
-				.addClass('glyphicon-play');
 		}
 	});
 
-	var auth_token;
+	// Random Ram or Rem
+	Math.floor(Math.random() * 2) ? $('#ram_rem').css('background-position-x', '4px') : $('#ram_rem').css('background-position-x', '72px');
 
 	background.storage.get(function(items) {
 		// Does Autoplay checkbox
 		$('#radio-autoplay').prop('checked', items.ListenMoeAutoPlay).change(function() {
 			background.storage.set({ListenMoeAutoPlay: this.checked});
 		});
-
-		auth_token = items.auth_token;
-
-		//
-		if (!items.auth_token) {
-			$('#favs a').prop('href', 'https://listen.moe/#/auth').text('Login');
-		} else {
-			$('#favs a').prop('href', 'https://listen.moe/#/favorites').text('View Favorites');
-			$('.toggle-favorite').show();
-		}
-
 	});
+
+	// Check if Token exist
+	if (!auth_token) {
+		$('#favs a').prop('href', 'https://listen.moe/#/auth').text('Login');
+	} else {
+		$('#favs a').prop('href', 'https://listen.moe/#/favorites').text('View Favorites');
+		$('.toggle-favorite').show();
+	}
 
 	// Favorites Button
-	$(document).on('click', '.toggle-favorite', function() {
-		favorites.update(auth_token);
-	});
+	$(document).on('click', '.toggle-favorite', favorites.update);
 
 });
+
+function jetFuelCantMeltDankAnimeMemes() {
+	$.ajax({
+		url: 'https://listen.moe/api/info/poll',
+		type: 'GET',
+		dataType: 'JSON',
+		success: function(data) {
+
+			//console.log(data);
+
+			$('#current-listeners').text(data.listeners);
+
+			var name = '';
+
+	    if (data.artist_name != '')
+	        name = data.artist_name;
+
+	    if (data.song_name != '')
+	        if (data.artist_name == '')
+	            name = data.song_name;
+	    			else
+	    				name = name + ' - ' + data.song_name;
+
+			$('#now-playing-info').text('Now playing: ' + name);
+
+			if (data.requested_by) {
+				$('#now-playing-request').show();
+				$('#request-username').prop('href', 'https://forum.listen.moe/u/' + data.requested_by).text(data.requested_by);
+			} else {
+				$('#now-playing-request').hide();
+				$('#request-username').prop('href', '').text('');
+			}
+
+			//Favorites
+			if (auth_token) {
+				$('.toggle-favorite').attr('data-song_id', data.song_id);
+				favorites.check(data.song_id);
+			}
+
+		}
+	});
+}
 
 function open_old_favorites() {
 	window.open(chrome.runtime.getURL("favorites.html"));
@@ -116,12 +126,12 @@ function open_old_favorites() {
 
 var favorites = {
 	isFavorited: null,
-	check: function(auth_token, song_id) {
+	check: function(song_id) {
 		var _this = this;
 		$.ajax({
 			url: 'https://listen.moe/api/songs/favorites/lite',
 			type: 'GET',
-			headers: { 'Authorization':'Bearer ' + auth_token },
+			headers: { 'Authorization': 'Bearer ' + auth_token },
 			success: function(data) {
 				var favorites = JSON.parse(data);
 
@@ -149,7 +159,7 @@ var favorites = {
 			}
 		});
 	},
-	update: function(auth_token) {
+	update: function() {
 		var _this = this;
 		var song_id = $('.toggle-favorite').attr('data-song_id');
 		$.ajax({
