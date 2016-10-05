@@ -4,6 +4,12 @@
 
 ### v2016.9.28.1
 
+- Either Rem or Ram will now be displayed when opening the popup
+- Minor CSS changes
+- Reverted back to polling for info. SSE didn't really work out...
+
+### v2016.9.28.1
+
 - Commented out a few console.logs
 - Minor CSS changes
 - No longer using setInterval to check for stats.json changes. Site is now using SSE.
