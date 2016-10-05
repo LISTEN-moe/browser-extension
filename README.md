@@ -2,7 +2,7 @@
 
 ## Changelog
 
-### v2016.9.28.1
+### v2016.10.5.2
 
 - Either Rem or Ram will now be displayed when opening the popup
 - Minor CSS changes
