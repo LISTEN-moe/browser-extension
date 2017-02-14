@@ -38,35 +38,6 @@ var radio = {
 	}
 };
 
-// Saves History of Songs Played
-// var historyInterval = setInterval(function() {
-//  	if (radio.isPlaying()) {
-// 	 	$.ajax({
-// 	 		url: 'https://listen.moe/api/info',
-// 	 		type: 'GET',
-// 	 		dataType: 'JSON',
-// 	 		success: function(data) {
-//
-// 	 			storage.get(function(items) {
-// 	 				if (items.history) {
-// 	 					var lastEntry = items.history[items.history.length - 1];
-// 	 					if (lastEntry.artist === data.artist_name && lastEntry.song === data.song_name) {
-// 	 						console.log('We good. Still the same song.');
-// 	 					} else {
-// 	 						items.history.push({ artist: data.artist_name, song: data.song_name });
-// 	 						if (items.history.length > 20) items.history = items.history.splice(-20); // If more than 10 in history, only keep the last 10.
-// 	 						storage.set({history: items.history});
-// 	 						console.log(items.history);
-// 	 					}
-// 	 				} else {
-// 	 					storage.set({ history: [{ artist: data.artist_name, song: data.song_name }] });
-// 	 				}
-// 	 			});
-// 			}
-// 		});
-// 	}
-// }, 15000);
-
 // Modify Request Header to change UserAgent
 if (typeof InstallTrigger === 'undefined') {
 	chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {
