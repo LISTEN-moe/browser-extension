@@ -2,6 +2,13 @@
 
 ## Changelog
 
+### v2017.2.13.1
+
+- Updated most of the endpoints
+- We're now using WebSockets for song info
+- Added a random request button to the site
+- Removed unused code
+
 ### v2016.10.5.2
 
 - Either Rem or Ram will now be displayed when opening the popup
