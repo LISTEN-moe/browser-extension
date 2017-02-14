@@ -22,13 +22,46 @@
 				<span>Current Listeners:</span> <span id="current-listeners"></span>
 			</div>
 
+			<style>
+				#alert {
+					display: none;
+					margin: 30px 5px -30px 80px;
+					text-align: center;
+					font-weight: bold !important;
+					color: orangered;
+				}
+			</style>
+
+			<div id="alert"></div>
+
 			<section id="listenMoe">
 
 				<div id="now-playing-container" style="text-align:center">
+
 					<div id='now-playing'>
-						<div id='now-playing-info'>Now Playing:</div>
+
+						<div id='now-playing-info' style="white-space: nowrap; overflow-x: hidden; margin: auto 10px;text-overflow: ellipsis;">
+							<span id="now-playing-text" style="position: relative; cursor: pointer">Loading...</span>
+						</div>
+
 						<div id="now-playing-request">Requested by <a id="request-username" target="_blank"></a></div>
+
 					</div>
+
+				</div>
+
+				<div id="queue-container" style="text-align:center">
+
+					<span>
+						Songs in queue: <span id="queue-amount">N/A</span>
+					</span>
+
+					&nbsp;
+
+					<span id="queue-user-before">
+						<span id="queue-user-before-amount">N/A</span>
+					</span>
+
 				</div>
 
 				<div id="radio-controls">

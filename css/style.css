@@ -81,6 +81,16 @@ a:hover {
 	font-weight: bold !important;
 }
 
+/* == Queue Info == */
+
+#queue-container, #queue-user {
+	display: none;
+}
+
+#queue-container, #queue-user-before {
+	margin-top: 5px;
+}
+
 /* == Radio Controls Container == */
 
 #radio-controls {
@@ -107,6 +117,14 @@ a:hover {
 
 /* == Favorites Button == */
 
+/*#radio-controls #radio-favorite .glyphicon-star-empty:before {
+	color: white;
+}
+
+#radio-controls #radio-favorite .glyphicon-star:before {
+	color: #ffac33;
+}*/
+
 #radio-controls #radio-favorite {
 	display: inline;
 	margin-left: 20px;
@@ -114,7 +132,7 @@ a:hover {
 
 #radio-controls #radio-favorite .toggle-favorite:hover {
 	cursor: pointer;
-	color: #EC1A55;
+	color: #EC1A55 !important;
 }
 
 .favorite-button {

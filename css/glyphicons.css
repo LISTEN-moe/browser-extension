@@ -61,13 +61,21 @@
     content: "\e005"
 }
 
-.glyphicon-star:before {
+/*.glyphicon-star:before {
     content: "\e006"
 }
 
 .glyphicon-star-empty:before {
     content: "\e007"
-}
+}*/
+
+/* Slight Change */
+.glyphicon-star:before {content: "\e006"}
+.glyphicon-star-empty:before {content: "\e006"}
+/*.glyphicon-star {color: #ffac33}*/
+.glyphicon-star {color: #fff133}
+.glyphicon-star-empty {color: grey}
+/* End Change */
 
 .glyphicon-user:before {
     content: "\e008"

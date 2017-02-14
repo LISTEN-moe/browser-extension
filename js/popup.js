@@ -1,19 +1,156 @@
 // Shortcut for chrome.extension.getBackgroundPage(). Allows me to execute background.js functions
 var background = chrome.extension.getBackgroundPage();
+var token;
+var socket;
 
-var auth_token;
+background.storage.get(items => token = items.auth_token);
 
-background.storage.get(function(items) {
-	auth_token = items.auth_token;
-});
+(function createSocket() {
+
+	socket = new WebSocket('wss://listen.moe/api/v2/socket');
+
+	socket.onopen = function() {
+		console.log('Alright we got a connection. \\o/');
+		/* == Need to check if token is valid == */
+		if (token) {
+			checkAuth(token).then(() => {
+				/* == Sending the user token will bring back additional infomation == */
+				socket.send(JSON.stringify({token: token}));
+			}).catch(() => console.log('Invalid Token Bruh'));
+		}
+	};
+
+	socket.onerror = function() {
+		console.log('Uhh. Something happened');
+		$('#now-playing-text').text('An error has occurred. Attempting to reconnect...');
+	};
+
+	socket.onclose = function() {
+		console.log('Welp. The connection was closed :(');
+		console.log('Reconnecting...');
+		setTimeout(createSocket, 10000);
+	};
+
+	socket.onmessage = function(response) {
+
+		if (response.data !== '') {
+
+			/* == Prepare the data == */
+			let data;
+			try {data = JSON.parse(response.data)}
+			catch (err) {console.error(err)}
+			if (!data) return;
+
+			/* == Sets Current Listners == */
+			$('#current-listeners').text(data.listeners);
+
+			/* == Sets Now Playing Info  == */
+			$('#now-playing-info span').text(`${data.artist_name ? data.artist_name + ' -' : ''} ${data.song_name} ${data.anime_name ? '[' + data.anime_name + ']' : ''}`);
+
+			/* == Sets Requester Info == */
+			if (data.requested_by) {
+				$('#now-playing-request').show();
+				$('#request-username').prop('href', 'https://forum.listen.moe/u/' + data.requested_by).text(data.requested_by);
+			} else {
+				$('#now-playing-request').hide();
+				$('#request-username').prop('href', '').text('');
+			}
+
+			/* == Saves Song ID == */
+			$('.toggle-favorite').data('id', data.song_id);
+
+			if (data.extended) {
+
+				$('#favs a').prop('href', 'https://listen.moe/#/favorites').text('View Favorites');
+				$('.toggle-favorite').show();
+
+				if (data.extended.favorite)
+					$('.toggle-favorite').removeClass('glyphicon-star-empty');
+				else
+					$('.toggle-favorite').addClass('glyphicon-star-empty');
+
+				if (data.extended.queue.songsInQueue !== 0) {
+
+					$('#queue-container').show();
+					$('#queue-amount').text(data.extended.queue.songsInQueue);
+
+					if (data.extended.queue.hasSongInQueue) {
+
+						$('#queue-user-before, #queue-user').show();
+						$('#queue-amount').parent().prop('title', 'You have ' + data.extended.queue.userSongsInQueue + ' queued song(s)').css('cursor', 'help');
+
+						if (data.extended.queue.inQueueBeforeUserSong === 0) $('#queue-user-before-amount').text('The next song is yours!');
+						else if (data.extended.queue.inQueueBeforeUserSong === 1) $('#queue-user-before-amount').text('There is ' + data.extended.queue.inQueueBeforeUserSong + ' song before your next song.');
+						else $('#queue-user-before-amount').text('There is ' + data.extended.queue.inQueueBeforeUserSong + ' songs before your next song.');
+
+					} else {
+
+						$('#queue-user-before, #queue-user').hide();
+						$('#queue-user-before-amount, #queue-user-amount').text('N/A');
+						$('#queue-amount').parent().prop('title', '').css('cursor', 'default');
+
+					}
+
+				} else {
+
+					$("#queue-container").hide();
+					$('#queue-amount').text('N/A');
+					$('#queue-amount').parent().prop('title', '').css('cursor', 'default');
+
+				}
+
+			} else $('#favs a').prop('href', 'https://listen.moe/#/auth').text('Login');
+
+		}
+
+	}
+
+})();
 
 $(function() {
 
-	// Get Info on Popup open
- jetFuelCantMeltDankAnimeMemes();
 
- //Set Interval to check for updated info every 10 seconds
- setInterval(jetFuelCantMeltDankAnimeMemes, 10000);
+	// Does Scrolling Text
+	var timeout;
+
+	timeout = setTimeout(autoScroll, 1000);
+
+	function autoScroll() {
+		var time = (Math.floor($('#now-playing-info span').text().length) / 10) * 500;
+		if ($('#now-playing-info span').width() > $('#now-playing-info').width()) {
+			clearTimeout(timeout);
+			$('#now-playing-text').stop().animate({
+				'margin-left': '-' + ($('#now-playing-info span').width() - $('#now-playing-info').width()) + 'px'
+			}, time, function() {
+				timeout = setTimeout(function() {
+					$('#now-playing-text').stop().animate({
+						'margin-left': '0px'
+					}, time / 4, function() {
+						timeout = setTimeout(autoScroll, 10000);
+					});
+				}, 3000);
+			});
+		}
+	}
+
+	$('#now-playing-info').hover(function() {
+		if ($('#now-playing-info span').width() > $('#now-playing-info').width()) {
+			clearTimeout(timeout);
+			$('#now-playing-text').stop().animate({
+				'margin-left': '-' + ($('#now-playing-info span').width() - $('#now-playing-info').width()) + 'px'
+			}, (Math.floor($('#now-playing-info span').text().length) / 10) * 500);
+		}
+	}, function() {
+		$('#now-playing-text').stop().animate({
+			'margin-left': '0px'
+		}, ((Math.floor($('#now-playing-info span').text().length) / 10) * 600) / 4, function() {
+			timeout = setTimeout(autoScroll, 10000);
+		});
+	});
+
+	$('#now-playing-info span').click(function(e) {
+		copyText(this.innerText);
+	});
 
 	// Initialize Volume Slider
 	$('#volume-slider').slider({
@@ -46,7 +183,6 @@ $(function() {
 
 	// Handles Play/Pause icons. Changes icon depending on the player status.
 	$(background.player).on('play abort loadstart', function(e) {
-		console.log(e.type);
 		if (e.type === 'play') {
 			$('.playpause')
 				.removeClass('glyphicon-play')
@@ -65,121 +201,64 @@ $(function() {
 		});
 	});
 
-	// Check if Token exist
-	if (!auth_token) {
-		$('#favs a').prop('href', 'https://listen.moe/#/auth').text('Login');
-	} else {
-		$('#favs a').prop('href', 'https://listen.moe/#/favorites').text('View Favorites');
-		$('.toggle-favorite').show();
-	}
-
 	// Favorites Button
-	$(document).on('click', '.toggle-favorite', favorites.update);
+	$(document).on('click', '.toggle-favorite', function() {
+		$.ajax({
+			url: 'https://listen.moe/api/songs/favorite',
+			type: 'POST',
+			headers: { 'Authorization': 'Bearer ' + token},
+			contentType: 'application/json;charset=utf-8',
+			data: JSON.stringify({ "song": $(this).data('id') }),
+			success: function(response) {
+				if (response.success) {
+					if (response.favorite) {
+						$('.toggle-favorite').removeClass('glyphicon-star-empty');
+					} else {
+						$('.toggle-favorite').addClass('glyphicon-star-empty');
+					}
+					//socket.send('update');
+				} else
+					console.log(error);
+			},
+			error: function(error) {
+				console.error(error);
+			}
+		});
+	});
 
 });
 
-function jetFuelCantMeltDankAnimeMemes() {
-	$.ajax({
-		url: 'https://listen.moe/api/info/poll',
-		type: 'GET',
-		dataType: 'JSON',
-		success: function(data) {
-
-			//console.log(data);
-
-			$('#current-listeners').text(data.listeners);
-
-			var name = '';
-
-	    if (data.artist_name != '')
-	        name = data.artist_name;
-
-	    if (data.song_name != '')
-	        if (data.artist_name == '')
-	            name = data.song_name;
-	    			else
-	    				name = name + ' - ' + data.song_name;
-
-			$('#now-playing-info').text('Now playing: ' + name);
-
-			if (data.requested_by) {
-				$('#now-playing-request').show();
-				$('#request-username').prop('href', 'https://forum.listen.moe/u/' + data.requested_by).text(data.requested_by);
-			} else {
-				$('#now-playing-request').hide();
-				$('#request-username').prop('href', '').text('');
-			}
-
-			//Favorites
-			if (auth_token) {
-				$('.toggle-favorite').attr('data-song_id', data.song_id);
-				favorites.check(data.song_id);
-			}
-
-		}
-	});
-}
-
+/* == Some old function that used to open the local favorites. No longer needed but I still use it so it's still here. == */
 function open_old_favorites() {
 	window.open(chrome.runtime.getURL("favorites.html"));
 }
 
-var favorites = {
-	isFavorited: null,
-	check: function(song_id) {
-		var _this = this;
+/* == Checks to see if token is valid == */
+function checkAuth(token) {
+	return new Promise(function (fulfill, reject) {
 		$.ajax({
-			url: 'https://listen.moe/api/songs/favorites/lite',
+			url: "https://listen.moe/api/user",
 			type: 'GET',
-			headers: { 'Authorization': 'Bearer ' + auth_token },
-			success: function(data) {
-				var favorites = JSON.parse(data);
-
-				_this.isFavorited = favorites.songs.some(function(a) {
-					return a.id === song_id.toString();
-				});
-
-				if (_this.isFavorited) {
-					$('.toggle-favorite').removeClass('glyphicon-star-empty');
-				} else {
-					$('.toggle-favorite').addClass('glyphicon-star-empty');
-				}
-
+			headers: { 'Authorization': 'Bearer ' + token},
+			success: function(response) {
+				fulfill(response);
 			},
-			error: function(data) {
-				var response = JSON.parse(data.responseText);
-				switch (response.error) {
-					case 'token_not_provided':
-					case 'token_expired':
-					case 'token_absent':
-					case 'token_invalid':
-						$('#favs a').prop('href', 'https://listen.moe/#/auth').text('Login');
-						$('.toggle-favorite').hide();
-				}
+			error: function(error) {
+				reject(error);
 			}
 		});
-	},
-	update: function() {
-		var _this = this;
-		var song_id = $('.toggle-favorite').attr('data-song_id');
-		$.ajax({
-			url: 'https://listen.moe/api/songs/favorite',
-			type: 'POST',
-			headers: { 'Authorization':'Bearer ' + auth_token },
-			contentType: 'application/json;charset=UTF-8',
-			data: JSON.stringify({"song": song_id}),
-			success: function(data) {
-				var data = JSON.parse(data);
-				if (data.data === "0") {
-					_this.isFavorited = false;
-					$('.toggle-favorite').addClass('glyphicon-star-empty');
-				} else if (data.data === "1") {
-					_this.isFavorited = true;
-					$('.toggle-favorite').removeClass('glyphicon-star-empty');
-				}
-			}
-		});
-	}
+	});
+}
+
+/* == Copies text. Nothing more. == */
+function copyText(text) {
+	var input = document.createElement('textarea');
+	document.body.appendChild(input);
+	input.value = text;
+	input.focus();
+	input.select();
+	document.execCommand('Copy');
+	input.remove();
 }
 
 // Print Play History in Console
