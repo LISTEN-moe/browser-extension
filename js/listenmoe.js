@@ -1,16 +1,16 @@
 $(window).on('hashchange', () => {
 	var auth_token = localStorage['satellizer_token'] ? localStorage['satellizer_token'] : null;
 	chrome.storage.local.set({auth_token: auth_token});
-	if (window.location.hash === '#/favorites') initRandomRequests();
+	if (window.location.hash === '#/favorites' || window.location.hash === '#/songs') initRandomRequests();
 });
 
 $(document).ready(() => {
-	if (window.location.hash === '#/favorites') initRandomRequests();
+	if (window.location.hash === '#/favorites' || window.location.hash === '#/songs') initRandomRequests();
 });
 
 function initRandomRequests() {
 	setTimeout(() => {
-		$('.nav-center').append(`<div class="random-song" style="position:absolute;top:60px;cursor:pointer;">Request Random</div>`);
+		$('.nav-center').append(`<div class="random-song" style="position:absolute;top:60px;cursor:pointer;">Request Random Favorite</div>`);
 		$('.random-song').data('enabled', true);
 		$('.random-song').click(function() {
 			if ( $(this).data('enabled') ) {
