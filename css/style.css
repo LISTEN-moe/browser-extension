@@ -14,8 +14,7 @@
 }
 
 html, body {
-  /*width: 460px;*/
-  width: 480px;
+  width: 460px;
   margin: 0px;
   padding: 0px;
   color: #ffffff;
@@ -62,8 +61,7 @@ a:hover {
 
 #listenMoe {
 	margin-bottom: 30px;
-	/*margin-left: 80px;*/
-	margin-left: 105px;
+	margin-left: 80px;
 	margin-top: 35px;
 }
 
@@ -246,8 +244,7 @@ a:hover {
 
 #favs {
 	position: absolute;
-	/*left: 105px;*/
-	left: 125px;
+	left: 105px;
 	bottom: 2px;
 }
 
@@ -266,12 +263,10 @@ a:hover {
 
 #ram_rem {
 	height: 145px;
-  /*width: 72px;*/
-  width: 110px;
+  width: 72px;
   background-size: cover;
   position: absolute;
   bottom: 0px;
   left: 5px;
-  /*background-position-x: 4px;*/
-  background-position-x: -3px;
+  background-position-x: 4px;
 }
