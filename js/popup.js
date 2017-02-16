@@ -255,15 +255,3 @@ function copyText(text) {
 	document.execCommand('Copy');
 	input.remove();
 }
-
-// Print Play History in Console
-function printHistory() {
-	var count = 1;
-	background.storage.get(function(a) {
-		var history = a.history.map(function(x) {
-			//return '['+ count++ +'] ' + x.artist + ' - ' + x.song;
-			return `[${('0' + count++).slice(-2)}] ${x.artist} - ${x.song}`;
-		}).join('\n');
-		console.log('Play History:\n' + history);
-	});
-}
