@@ -192,7 +192,7 @@ $(function() {
 	});
 
 	// Random Ram or Rem
-	Math.floor(Math.random() * 2) ? $('#ram_rem').css('background-position-x', '4px') : $('#ram_rem').css('background-position-x', '72px');
+	// Math.floor(Math.random() * 2) ? $('#ram_rem').css('background-position-x', '4px') : $('#ram_rem').css('background-position-x', '72px');
 
 	background.storage.get(function(items) {
 		// Does Autoplay checkbox
@@ -227,11 +227,6 @@ $(function() {
 	});
 
 });
-
-/* == Some old function that used to open the local favorites. No longer needed but I still use it so it's still here. == */
-function open_old_favorites() {
-	window.open(chrome.runtime.getURL("favorites.html"));
-}
 
 /* == Checks to see if token is valid == */
 function checkAuth(token) {
