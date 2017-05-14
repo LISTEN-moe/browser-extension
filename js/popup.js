@@ -49,10 +49,15 @@ background.storage.get(items => token = items.auth_token);
 
 			/* == Sets Requester Info == */
 			if (data.requested_by) {
-				$('#now-playing-request').show();
-				$('#request-username').prop('href', 'https://forum.listen.moe/u/' + data.requested_by).text(data.requested_by);
+				if (/\s/g.test(data.requested_by)) {
+					$('#now-playing-event').show();
+					$('#now-playing-event').text('🎉 ' + data.requested_by + ' 🎉');
+				} else {
+					$('#now-playing-request').show();
+					$('#request-username').prop('href', 'https://forum.listen.moe/u/' + data.requested_by).text(data.requested_by);
+				}
 			} else {
-				$('#now-playing-request').hide();
+				$('#now-playing-request, #now-playing-event').hide();
 				$('#request-username').prop('href', '').text('');
 			}
 

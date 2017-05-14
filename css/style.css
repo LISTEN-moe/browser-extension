@@ -69,17 +69,24 @@ a:hover {
 /* == Now Playing Info == */
 
 #now-playing #now-playing-info,
-#now-playing #now-playing-request {
+#now-playing #now-playing-request,
+#now-playing #now-playing-event {
 	padding-right: 5px;
 }
 
-#now-playing #now-playing-request {
+.now-playing {
 	display: none;
 	margin-top: 5px;
 }
 
 #now-playing #now-playing-request #request-username {
 	font-weight: bold !important;
+}
+
+#now-playing #now-playing-event {
+  color: #ec1a55;
+  font-weight: bold !important;
+  cursor: default;
 }
 
 /* == Queue Info == */
