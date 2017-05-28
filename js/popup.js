@@ -114,7 +114,6 @@ background.storage.get(items => token = items.auth_token);
 
 $(function() {
 
-
 	// Does Scrolling Text
 	var timeout;
 
@@ -161,7 +160,7 @@ $(function() {
 	$('#volume-slider').slider({
 		min: 0, max: 100, range: 'min', value: background.radio.getVol(),
 		slide: function(event, ui) {
-			background.radio.setVol(ui.value);
+			background.radio.setVol(Math.floor(ui.value));
 		}
 	});
 

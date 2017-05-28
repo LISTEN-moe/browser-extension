@@ -17,6 +17,9 @@ var radio = {
 	disable: function() {
 		player.setAttribute('src', '');
 	},
+	toggle: function() {
+		radio.isPlaying() ? radio.disable() : radio.enable();
+	},
 	isPlaying: function() {
 		return player.paused ? false : true;
 	},
@@ -38,6 +41,13 @@ var radio = {
 	}
 };
 
+chrome.commands.onCommand.addListener(function(command) {
+	console.log(command);
+	if (command === 'toggle_radio') radio.toggle();
+	else if (command === 'vol_up') (radio.getVol() > 95) ? radio.setVol(100) : radio.setVol(Math.floor(radio.getVol() + 5));
+	else if (command === 'vol_down') (radio.getVol() < 5) ? radio.setVol(0) : radio.setVol(Math.floor(radio.getVol() - 5));
+});
+
 // Modify Request Header to change UserAgent
 if (typeof InstallTrigger === 'undefined') {
 	chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {
@@ -54,3 +64,11 @@ if (typeof InstallTrigger === 'undefined') {
 		return {requestHeaders: details.requestHeaders};
 	}, {urls: ["*://listen.moe/*"]}, ["blocking", "requestHeaders"]);
 }
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+
+	if (request.type === 'open') {
+		if (request.value === 'keyshortcuts') chrome.tabs.create({url: 'chrome://extensions/configureCommands'});
+	}
+
+})
