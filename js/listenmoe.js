@@ -1,6 +1,6 @@
 $(window).on('hashchange', () => {
-	var auth_token = localStorage['satellizer_token'] ? localStorage['satellizer_token'] : null;
-	chrome.storage.local.set({auth_token: auth_token});
+	var authToken = localStorage.satellizer_token ? localStorage.satellizer_token : null;
+	chrome.storage.local.set({ authToken });
 	if (window.location.hash === '#/favorites' || window.location.hash === '#/songs') initRandomRequests();
 });
 
@@ -47,7 +47,7 @@ function doRequestSong(songInfo, requestsRemaining) {
 		url: '/api/songs/request',
 		type: 'POST',
 		headers: {
-			'Authorization': 'Bearer ' + localStorage['satellizer_token']
+			'Authorization': 'Bearer ' + localStorage.satellizer_token
 		},
 		data: {"song": songInfo.id},
 		success: function(data) {
