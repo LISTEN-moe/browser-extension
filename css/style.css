@@ -4,13 +4,8 @@
   transition: color 0.5s;
 }
 
-@-webkit-keyframes spin {
-  from {
-    -webkit-transform: rotate(0deg);
-  }
-  to {
-    -webkit-transform: rotate(360deg);
-  }
+html {
+	min-height: 145px;
 }
 
 html, body {
@@ -21,12 +16,6 @@ html, body {
   color: #ffffff;
 	font-family: "Segoe UI", Tahoma, sans-serif;
 	font-size: 12px;
-}
-
-@-moz-document url-prefix() {
-  body {
-		border: 1px solid;
-	}
 }
 
 body {
@@ -45,7 +34,7 @@ a:hover {
 
 .glyphicon {
   font-size: 20px;
-	-webkit-user-select: none;
+	user-select: none;
   -moz-user-select: none;
 }
 
@@ -60,10 +49,11 @@ a:hover {
 /* == Container == */
 
 #listenMoe {
-	margin-bottom: 30px;
+	margin-bottom: 45px;
 	/*margin-left: 80px;*/
 	margin-left: 105px;
-	margin-top: 35px;
+	/* margin-top: 35px; */
+	margin-top: 45px;
 }
 
 /* == Now Playing Info == */
@@ -74,16 +64,9 @@ a:hover {
 	padding-right: 5px;
 }
 
-.now-playing {
+#now-playing #now-playing-request {
 	display: none;
 	margin-top: 5px;
-}
-
-#now-playing #now-playing-request #request-username {
-	font-weight: bold !important;
-}
-
-#now-playing #now-playing-event {
   color: #ec1a55;
   font-weight: bold !important;
   cursor: default;
@@ -109,7 +92,7 @@ a:hover {
 /* == Play/Pause Button == */
 
 #radio-controls #radio-playpause {
-	width: 25px;
+	/* width: 25px; */
 	display: inline;
 	margin-right: 15px;
 }
@@ -122,16 +105,6 @@ a:hover {
 #radio-controls #radio-playpause .glyphicon-refresh {
 	animation: spin 2s infinite linear;
 }
-
-/* == Favorites Button == */
-
-/*#radio-controls #radio-favorite .glyphicon-star-empty:before {
-	color: white;
-}
-
-#radio-controls #radio-favorite .glyphicon-star:before {
-	color: #ffac33;
-}*/
 
 #radio-controls #radio-favorite {
 	display: inline;
@@ -205,62 +178,19 @@ a:hover {
 	text-align: center;
 }
 
-/*#listenMoe { margin-bottom: 25px; margin-left: 80px; }
-#listenMoe div #now-playing { margin-top: 35px; }
-#listenMoe div #now-playing #now-playing-info, #listenMoe div #now-playing #now-playing-request { padding-right: 5px; }
-#listenMoe div #now-playing #now-playing-request { display: none; margin-top: 5px; }
-#listenMoe div #now-playing #now-playing-request #request-username { font-weight: bold !important; }
-#listenMoe div #listeners { position: absolute; top: 5px; right: 5px; }
-
-#listenMoe #radio-controls { margin: 10px 0px 10px 0px; text-align: center; }
-
-#listenMoe #radio-controls #radio-playpause { width: 25px; display: inline; margin-right: 15px; }
-#listenMoe #radio-controls #radio-playpause .playpause:hover { cursor: pointer; color: #EC1A55; }
-
-#listenMoe #radio-controls #radio-playpause .glyphicon-refresh { animation: spin 2s infinite linear; }
-
-#listenMoe #radio-controls #radio-favorite { display: inline; margin-left: 20px; }
-#listenMoe #radio-controls #radio-favorite .toggle-favorite:hover { cursor: pointer; color: #EC1A55 }
-
-#listenMoe #radio-controls #radio-volume { display: inline; }
-#listenMoe #radio-controls #radio-volume #volume-slider {
-    background: #F75E7E;
-    display: inline-block;
-    height: 8px;
-    width: 200px;
-    top: -5px;
-    margin: auto;
-    border: none;
-}
-
-#listenMoe #radio-controls #radio-volume #volume-slider.ui-slider .ui-slider-range-min { background: #EC1A55; }
-#listenMoe #radio-controls #radio-volume #volume-slider.ui-slider .ui-slider-handle {
-    top: -6px;
-    height: 20px;
-    width: 20px;
-    border: 1px solid #666;
-    border-radius: 50px;
-    outline: none;
-    background: white;
-    border: none;
-}
-
-#listenMoe #radio-controls #radio-volume .glyphicon-volume-down { width: 15px; right: 9px; }
-#listenMoe #radio-controls #radio-volume .glyphicon-volume-up { left: 13px; }
-
-#listenMoe #radio-options { text-align: center; }*/
+/*  */
 
 #favs {
 	position: absolute;
 	/*left: 105px;*/
 	left: 125px;
-	bottom: 2px;
+	bottom: 5px;
 }
 
-#credit {
+#settings {
   position: absolute;
-  right: 5px;
-  bottom: 2px;
+  right: 10px;
+  bottom: 5px;
 }
 
 #rem {
