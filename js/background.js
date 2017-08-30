@@ -1,6 +1,11 @@
 /* Shortcut for chrome.storage.local api */
 var storage = chrome.storage.local;
 
+chrome.runtime.onInstalled.addListener(function (details) {
+	if (details.reason === 'update')
+		notifications.create('LISTEN.moe', `Extension has updated to v${chrome.runtime.getManifest().version}`);
+});
+
 /* Defaults */
 var defaults = {
 	volume: 50,
@@ -8,19 +13,7 @@ var defaults = {
 	enableNotifications: true,
 	enableEventNotifications: true,
 	authToken: ''
-}
-
-chrome.runtime.onInstalled.addListener(function(details) {
-
-	if (details.reason === 'update' && details.previousVersion === '2017.5.28.1') storage.clear();
-
-	if (details.reason === 'update') {
-
-		notifications.create('LISTEN.moe', `Extension has updated to v${chrome.runtime.getManifest().version}`);
-	
-	}
-
-});
+};
 
 /* Create player */
 var player = $('<audio id="listen-moe" autoplay>').appendTo('body')[0];
@@ -29,7 +22,7 @@ var storageItems = {};
 
 /* Gets stored values if any and applies them */
 storage.get(defaults, function(items) {
-	if (items.volume) radio.setVol(items.volume);
+	if (typeof items.volume !== 'undefined') radio.setVol(items.volume);
 	if (items.enableAutoplay) radio.enable();
 	storageItems = items;
 });
