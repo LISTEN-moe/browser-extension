@@ -1,6 +1,7 @@
 /* Shortcut for chrome.storage.local api */
 var storage = chrome.storage.local;
 
+/* On Install */
 chrome.runtime.onInstalled.addListener(function (details) {
 	if (details.reason === 'update')
 		notifications.create('LISTEN.moe', `Extension has updated to v${chrome.runtime.getManifest().version}`);
@@ -18,6 +19,8 @@ var defaults = {
 /* Create player */
 var player = $('<audio id="listen-moe" autoplay>').appendTo('body')[0];
 
+
+/* Storage Items */
 var storageItems = {};
 
 /* Gets stored values if any and applies them */
@@ -37,9 +40,11 @@ chrome.storage.onChanged.addListener(function(changes) {
 
 var radio = {
 	enable: function() {
+		chrome.browserAction.setBadgeText({ text: '▶' })
 		return player.setAttribute('src', 'https://listen.moe/stream');
 	},
 	disable: function() {
+		chrome.browserAction.setBadgeText({ text: '' })
 		return player.setAttribute('src', '');
 	},
 	toggle: function() {
