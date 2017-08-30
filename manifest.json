@@ -35,7 +35,7 @@
 	"browser_action": {
 		"browser_style": false,
 		"default_popup": "popup.html",
-		"default_icon": "images/icon48.png"
+		"default_icon": "images/icon48x48.png"
 	},
 
 	"background": {
