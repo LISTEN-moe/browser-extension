@@ -11,6 +11,7 @@
 	"name": "LISTEN.moe",
 	"description": "Anime/Japanese Radio powered by LISTEN.moe!",
 	"version": "2017.8.29.1",
+	"version_name": "RO-500",
 
 	"options_page": "options.html",
 	"options_ui": {
