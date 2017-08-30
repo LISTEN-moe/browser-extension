@@ -2,7 +2,7 @@
 
 ## Changelog
 
-### v2017.5.29.1
+### RO-500 (v2017.5.29.1)
 - Added options page.
 - Keyboard Shortcuts. Access them via the options page.
 - Moved all web request stuff to the background page.
