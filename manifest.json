@@ -10,18 +10,26 @@
 
 	"name": "LISTEN.moe",
 	"description": "Anime/Japanese Radio powered by LISTEN.moe!",
-	"version": "2017.5.28.1",
+	"version": "2017.8.29.1",
+
+	"options_page": "options.html",
+	"options_ui": {
+		"page": "options.html",
+		"chrome_style": true
+	},
 
 	"icons": {
-		"48": "images/icon48.png",
-		"128": "images/icon128.png"
+		"16": "images/logo16x16.png",
+		"48": "images/logo48x48.png",
+		"128": "images/logo128x128.png"
 	},
 
 	"permissions": [
 		"*://listen.moe/*",
 		"storage",
 		"webRequest",
-		"webRequestBlocking"
+		"webRequestBlocking",
+		"notifications"
 	],
 
 	"browser_action": {
@@ -41,6 +49,9 @@
 				"default": "Ctrl+Shift+Space"
 			},
 			"description": "Toggle Radio"
+		},
+		"now_playing": {
+			"description": "Display Now Playing"
 		},
 		"vol_up": {
 			"description": "Raise Radio Volume"
