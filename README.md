@@ -1,6 +1,16 @@
-# Odyssey-Radio
+# Official LISTEN.moe Chrome Extension
 
 ## Changelog
+
+### v2017.5.29.1
+- Added options page.
+- Keyboard Shortcuts. Access them via the options page.
+- Moved all web request stuff to the background page.
+- Websocket is now always connected allowing Now Playing notifications.
+- Updated icons.
+- Removed unused CSS.
+
+**Firefox version of the extension is now deprecated.**
 
 ### v2017.2.13.1
 
