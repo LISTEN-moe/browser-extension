@@ -99,14 +99,14 @@ var radio = {
 
 			radio.socket.ws.onmessage = function(response) {
 				if (response.data !== '') {
-					
+
 					var data;
 					try { data = JSON.parse(response.data); }
 					catch (err) { console.error(err); }
 					if (!data || data.reason) return;
-					
+
 					console.log(data);
-					
+
 					radio.data = data;
 
 					/* Emit event for Popup.js */
@@ -126,7 +126,7 @@ var radio = {
 							if (!radio.socket.data.eventInProgress)
 								notifications.create(`🎉 ${data.requested_by} has started! 🎉`, radio.data.song_name, radio.data.artist_name);
 							else
-								notifications.create(`🎉 ${data.requested_by} 🎉`, radio.data.song_name, radio.data.artist_name);				
+								notifications.create(`🎉 ${data.requested_by} 🎉`, radio.data.song_name, radio.data.artist_name);
 
 							radio.socket.data.eventInProgress = true;
 
@@ -137,7 +137,7 @@ var radio = {
 
 							radio.socket.data.eventInProgress = false;
 
-						}					
+						}
 
 						radio.socket.data.lastSongID = data.song_id;
 
@@ -191,14 +191,14 @@ var radio = {
 radio.socket.init();
 
 chrome.commands.onCommand.addListener(function(command) {
-	if (command === 'toggle_radio') 
+	if (command === 'toggle_radio')
 		radio.toggle();
-	else if (command === 'vol_up') 
+	else if (command === 'vol_up')
 		(radio.getVol() > 95) ? radio.setVol(100) : radio.setVol(Math.floor(radio.getVol() + 5));
-	else if (command === 'vol_down') 
+	else if (command === 'vol_down')
 		(radio.getVol() < 5) ? radio.setVol(0) : radio.setVol(Math.floor(radio.getVol() - 5));
 	else if (command === 'now_playing') {
-		var npText = /\s/g.test(radio.data.requested_by) ? `🎉 ${radio.data.requested_by} 🎉` : 'Now Playing'; 
+		var npText = /\s/g.test(radio.data.requested_by) ? `🎉 ${radio.data.requested_by} 🎉` : 'Now Playing';
 		notifications.create(npText, radio.data.song_name, radio.data.artist_name, false, (radio.data.extended ? true : false));
 	}
 });
@@ -231,12 +231,12 @@ var notifications = {
 		var notificationContent = {
 			type: 'basic',
 			title, message,
-			iconUrl: 'images/logo128x128.png',
+			iconUrl: 'images/logo128.png',
 			requireInteraction: sticky || false
 		};
 
 		if (altText && typeof altText === 'string') notificationContent.contextMessage = altText;
-		
+
 		var buttonFuntions = [];
 
 		if (showFavoriteButton) {

@@ -1,41 +1,49 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:300,600);
 
 * {
-  transition: color 0.5s;
+	transition: color 0.5s;
 }
 
 html {
 	min-height: 145px;
 }
 
-html, body {
-  /*width: 460px;*/
-  width: 480px;
-  margin: 0px;
-  padding: 0px;
-  color: #ffffff;
-	font-family: "Segoe UI", Tahoma, sans-serif;
-	font-size: 12px;
+body {
+	background-color: #1d1f2b;
 }
 
+html,
 body {
-  background-color: #1d1f2b;
+	width: 480px;
+	margin: 0;
+	padding: 0;
+	color: #fff;
+	font: 300 12px 'Open Sans', 'Segoe UI', 'Tahoma', sans-serif;
+	letter-spacing: 0.05em !important;
 }
 
 a {
-  text-decoration: none;
-  color: #ec1a55;
-  cursor: pointer;
+	color: #ec1a55;
+	cursor: pointer;
+	text-decoration: none;
 }
 
 a:hover {
-  text-decoration: underline;
+	text-decoration: underline;
 }
 
 .glyphicon {
-  font-size: 20px;
+	font-size: 20px;
 	user-select: none;
-  -moz-user-select: none;
+	-moz-user-select: none;
+}
+
+#alert {
+	display: none;
+	margin: 30px 5px -30px 80px;
+	text-align: center;
+	font-weight: bold !important;
+	color: orangered;
 }
 
 /* == Listener Count == */
@@ -50,13 +58,27 @@ a:hover {
 
 #listenMoe {
 	margin-bottom: 45px;
-	/*margin-left: 80px;*/
 	margin-left: 105px;
-	/* margin-top: 35px; */
 	margin-top: 45px;
 }
 
 /* == Now Playing Info == */
+
+#now-playing-container {
+	text-align: center;
+}
+
+#now-playing-info {
+	white-space: nowrap;
+	overflow-x: hidden;
+	margin: auto 10px;
+	text-overflow: ellipsis;
+}
+
+#now-playing-text {
+	position: relative;
+	cursor: pointer;
+}
 
 #now-playing #now-playing-info,
 #now-playing #now-playing-request,
@@ -67,12 +89,16 @@ a:hover {
 #now-playing #now-playing-request {
 	display: none;
 	margin-top: 5px;
-  color: #ec1a55;
-  font-weight: bold !important;
-  cursor: default;
+	color: #ec1a55;
+	font-weight: bold !important;
+	cursor: default;
 }
 
 /* == Queue Info == */
+
+#queue-container {
+	text-align: center;
+}
 
 #queue-container, #queue-user {
 	display: none;
@@ -92,7 +118,6 @@ a:hover {
 /* == Play/Pause Button == */
 
 #radio-controls #radio-playpause {
-	/* width: 25px; */
 	display: inline;
 	margin-right: 15px;
 }
@@ -116,22 +141,6 @@ a:hover {
 	color: #EC1A55 !important;
 }
 
-.favorite-button {
-	width: 64px;
-  height: 64px;
-  background: url(../images/fav_sprite.png) no-repeat;
-  background-position: 0 0;
-  position: absolute;
-  top: -7px;
-  left: -7px;
-  transform: scale(.75, .75);
-}
-
-.favorite-button.activated {
-  background-position: -3519px 0;
-  transition: background 1s steps(55);
-}
-
 /* == Volume Slider == */
 
 #radio-controls #radio-volume {
@@ -139,13 +148,13 @@ a:hover {
 }
 
 #radio-controls #radio-volume #volume-slider {
-  background: #F75E7E;
-  display: inline-block;
-  height: 8px;
-  width: 200px;
-  top: -5px;
-  margin: auto;
-  border: none;
+	background: #F75E7E;
+	display: inline-block;
+	height: 8px;
+	width: 200px;
+	top: -5px;
+	margin: auto;
+	border: none;
 }
 
 #radio-controls #radio-volume #volume-slider.ui-slider .ui-slider-range-min {
@@ -153,14 +162,14 @@ a:hover {
 }
 
 #radio-controls #radio-volume #volume-slider.ui-slider .ui-slider-handle {
-  top: -6px;
-  height: 20px;
-  width: 20px;
-  border: 1px solid #666;
-  border-radius: 50px;
-  outline: none;
-  background: white;
-  border: none;
+	top: -6px;
+	height: 20px;
+	width: 20px;
+	border: 1px solid #666;
+	border-radius: 50px;
+	outline: none;
+	background: white;
+	border: none;
 }
 
 #radio-controls #radio-volume .glyphicon-volume-down {
@@ -172,42 +181,30 @@ a:hover {
 	left: 13px;
 }
 
-/* == Radio Options == */
-
-#listenMoe #radio-options {
-	text-align: center;
-}
-
-/*  */
+/* Footer */
 
 #favs {
 	position: absolute;
-	/*left: 105px;*/
 	left: 125px;
 	bottom: 5px;
 }
 
 #settings {
-  position: absolute;
-  right: 10px;
-  bottom: 5px;
+	position: absolute;
+	right: 10px;
+	bottom: 5px;
 }
 
-#rem {
+/* GIF */
+
+#ram_rem {
+	/* background-image: url('../images/ram_rem.gif') */
+	background-image: url('../images/kanna.gif');
+	background-position-x: -3px;
+	background-size: cover;
 	height: 145px;
+	width: 110px;
 	position: absolute;
 	bottom: 0px;
 	left: 5px;
-}
-
-#ram_rem {
-	height: 145px;
-  /*width: 72px;*/
-  width: 110px;
-  background-size: cover;
-  position: absolute;
-  bottom: 0px;
-  left: 5px;
-  /*background-position-x: 4px;*/
-  background-position-x: -3px;
 }
