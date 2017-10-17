@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="options.css">
+	</head>
+	<body>
+		<div>
+			<label title="Start playing the radio when the browser starts.">
+				<input type="checkbox" id="enableAutoplay"> Autoplay on Browser Start
+			</label>
+
+			<label title="Display a notification with now playing info when the song changes. Will not appear if radio is not playing.">
+				<input type="checkbox" id="enableNotifications"> Display Notification on Song Change
+			</label>
+
+			<label title="Displays a notification with now playing info when an event is in progress regardless if radio is playing.">
+				<input type="checkbox" id="enableEventNotifications"> Display Event Notifications
+			</label>
+		</div>
+
+		<a id="shortcuts">Configure Keyboard Shortcuts</a>
+
+		<script src="options.js"></script>
+	</body>
+</html>

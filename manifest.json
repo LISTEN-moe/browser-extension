@@ -13,16 +13,16 @@
 	"version": "2017.8.29.1",
 	"version_name": "RO-500",
 
-	"options_page": "options.html",
+	"options_page": "options/options.html",
 	"options_ui": {
-		"page": "options.html",
+		"page": "options/options.html",
 		"chrome_style": true
 	},
 
 	"icons": {
-		"16": "images/logo16x16.png",
-		"48": "images/logo48x48.png",
-		"128": "images/logo128x128.png"
+		"16": "images/logo16.png",
+		"48": "images/logo48.png",
+		"128": "images/logo128.png"
 	},
 
 	"permissions": [
@@ -36,7 +36,7 @@
 	"browser_action": {
 		"browser_style": false,
 		"default_popup": "popup.html",
-		"default_icon": "images/icon48x48.png"
+		"default_icon": "images/logo48.png"
 	},
 
 	"background": {

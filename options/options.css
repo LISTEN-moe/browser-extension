@@ -1,0 +1,22 @@
+input[type='checkbox'] {
+	vertical-align: middle;
+}
+
+label {
+	display: block;
+	margin-bottom: 0.5em;
+}
+
+label:hover {
+	cursor: help;
+}
+
+a:hover {
+	cursor: pointer;
+}
+
+#shortcuts {
+	display: block;
+	margin-top: 1em;
+	text-align: center;
+}

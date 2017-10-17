@@ -1,48 +1,30 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta charset="utf-8"/> <!-- Firefox throws some errors without this. nothing game breaking. it was just annoying me -->
-		<script src="js/jquery-3.1.0.min.js"></script>
-		<script src="js/jquery-ui.min.js"></script>
-		<link href="css/jquery-ui.min.css" type="text/css" rel="stylesheet">
-		<link href="css/glyphicons.css" type="text/css" rel="stylesheet">
-		<link href="css/style.css" type="text/css" rel="stylesheet">
-		<style>
-			div, span, a, label {
-				font-weight: 300 !important;
-		    letter-spacing: 0.05em !important;
-		    font-family: 'Open Sans', sans-serif;
-			}
-		</style>
+		<meta charset="utf-8">
+
+		<link rel="stylesheet" href="css/jquery-ui.min.css">
+		<link rel="stylesheet" href="css/glyphicons.css">
+		<link rel="stylesheet" href="css/style.css">
 	</head>
 	<body>
 
 		<div id="container">
 
-			<div id='listeners'>
+			<div id="listeners">
 				<span>Current Listeners:</span> <span id="current-listeners"></span>
 			</div>
-
-			<style>
-				#alert {
-					display: none;
-					margin: 30px 5px -30px 80px;
-					text-align: center;
-					font-weight: bold !important;
-					color: orangered;
-				}
-			</style>
 
 			<div id="alert"></div>
 
 			<section id="listenMoe">
 
-				<div id="now-playing-container" style="text-align:center">
+				<div id="now-playing-container">
 
-					<div id='now-playing'>
+					<div id="now-playing">
 
-						<div id='now-playing-info' style="white-space: nowrap; overflow-x: hidden; margin: auto 10px;text-overflow: ellipsis;">
-							<span id="now-playing-text" style="position: relative; cursor: pointer" title="Click to copy!">Loading...</span>
+						<div id="now-playing-info">
+							<span id="now-playing-text" title="Click to copy!">Loading...</span>
 						</div>
 
 						<div id="now-playing-request"></div>
@@ -51,7 +33,7 @@
 
 				</div>
 
-				<div id="queue-container" style="text-align:center">
+				<div id="queue-container">
 
 					<span>
 						Songs in queue: <span id="queue-amount">N/A</span>
@@ -88,11 +70,12 @@
 			<!-- <div id="credit">Powered By <a href="https://listen.moe/" target="_blank">LISTEN.moe</a></div> -->
 			<div id="settings"><a>Settings</a></div>
 
-			<!-- <div id="ram_rem" style="background-image: url(images/ram_rem.gif)"></div> -->
-			<div id="ram_rem" style="background-image: url(images/kanna-v2.gif)"></div>
+			<div id="ram_rem"></div>
 
 		</div>
 
+		<script src="js/jquery-3.1.0.min.js"></script>
+		<script src="js/jquery-ui.min.js"></script>
 		<script src="js/popup.js"></script>
 
 	</body>

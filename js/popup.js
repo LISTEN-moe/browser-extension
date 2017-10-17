@@ -6,7 +6,7 @@ setInfo();
 background.addEventListener('songChanged', setInfo);
 
 function setInfo() {
-	
+
 	var data = radio.data;
 
 	/* Sets Current Listners */
@@ -70,7 +70,7 @@ function setInfo() {
 		}
 
 	} else {
-		
+
 		$('#favs a').prop('href', 'https://listen.moe/#/auth').text('Login');
 
 	}
