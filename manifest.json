@@ -65,7 +65,7 @@
 	"content_scripts": [
 		{
 			"matches": ["https://listen.moe/*"],
-			"js": ["js/jquery-3.1.0.min.js", "js/sweetalert2.min.js", "js/listenmoe.js"],
+			"js": ["js/sweetalert2.min.js", "js/listenmoe.js"],
 			"run_at": "document_end",
 			"all_frames": false
 		}
