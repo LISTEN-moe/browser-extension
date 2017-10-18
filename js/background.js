@@ -40,11 +40,9 @@ chrome.storage.onChanged.addListener(function(changes) {
 
 var radio = {
 	enable: function() {
-		chrome.browserAction.setBadgeText({ text: '▶' })
 		return player.setAttribute('src', 'https://listen.moe/stream');
 	},
 	disable: function() {
-		chrome.browserAction.setBadgeText({ text: '' })
 		return player.setAttribute('src', '');
 	},
 	toggle: function() {
@@ -93,7 +91,7 @@ var radio = {
 			radio.socket.ws.onclose = function() {
 				console.log('Welp. The connection was closed :(');
 				console.log('Reconnecting...');
-				radio.socket.data.lastSongID = -1;
+				// radio.socket.data.lastSongID = -1;
 				setTimeout(radio.socket.init, 10000);
 			};
 
@@ -124,9 +122,9 @@ var radio = {
 						if (/\s/g.test(data.requested_by) && storageItems.enableEventNotifications) {
 
 							if (!radio.socket.data.eventInProgress)
-								notifications.create(`🎉 ${data.requested_by} has started! 🎉`, radio.data.song_name, radio.data.artist_name);
+								notifications.create(`🎉 ${data.requested_by} has started!`, radio.data.song_name, radio.data.artist_name);
 							else
-								notifications.create(`🎉 ${data.requested_by} 🎉`, radio.data.song_name, radio.data.artist_name);
+								notifications.create(`🎉 ${data.requested_by}`, radio.data.song_name, radio.data.artist_name);				
 
 							radio.socket.data.eventInProgress = true;
 
@@ -198,7 +196,7 @@ chrome.commands.onCommand.addListener(function(command) {
 	else if (command === 'vol_down')
 		(radio.getVol() < 5) ? radio.setVol(0) : radio.setVol(Math.floor(radio.getVol() - 5));
 	else if (command === 'now_playing') {
-		var npText = /\s/g.test(radio.data.requested_by) ? `🎉 ${radio.data.requested_by} 🎉` : 'Now Playing';
+		var npText = /\s/g.test(radio.data.requested_by) ? `🎉 ${radio.data.requested_by}` : 'Now Playing'; 
 		notifications.create(npText, radio.data.song_name, radio.data.artist_name, false, (radio.data.extended ? true : false));
 	}
 });
