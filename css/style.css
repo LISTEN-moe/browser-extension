@@ -115,10 +115,16 @@ a:hover {
 	text-align: center;
 }
 
+#radio-controls #radio-playpause,
+#radio-controls #radio-volume,
+#radio-controls #radio-favorite {
+	display: inline-block;
+	vertical-align: middle;
+}
+
 /* == Play/Pause Button == */
 
 #radio-controls #radio-playpause {
-	display: inline;
 	margin-right: 15px;
 }
 
@@ -131,54 +137,57 @@ a:hover {
 	animation: spin 2s infinite linear;
 }
 
+/* == Volume Slider == */
+
+#radio-volume #volume-slider {
+    vertical-align: text-top;
+	width: 200px;
+}
+
+#volume-slider {
+	-webkit-appearance: none;
+	border-radius: 5px;
+}
+
+#volume-slider::-webkit-slider-runnable-track {
+	background: #ec1a55;
+	border: none;
+	border-radius: 5px;
+	height: 6px;
+}
+
+#volume-slider::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	background: #fff;
+	border-radius: 50%;
+	border: none;
+	height: 16px;
+	margin-top: -5px;
+	width: 16px;
+}
+
+#volume-slider:focus {
+	outline: none;
+}
+
+#radio-controls #radio-volume .glyphicon-volume-down {
+	right: 9px;
+	width: 15px;
+}
+
+#radio-controls #radio-volume .glyphicon-volume-up {
+	left: 13px;
+}
+
+/* == Favorite button == */
+
 #radio-controls #radio-favorite {
-	display: inline;
 	margin-left: 20px;
 }
 
 #radio-controls #radio-favorite .toggle-favorite:hover {
 	cursor: pointer;
 	color: #EC1A55 !important;
-}
-
-/* == Volume Slider == */
-
-#radio-controls #radio-volume {
-	display: inline;
-}
-
-#radio-controls #radio-volume #volume-slider {
-	background: #F75E7E;
-	display: inline-block;
-	height: 8px;
-	width: 200px;
-	top: -5px;
-	margin: auto;
-	border: none;
-}
-
-#radio-controls #radio-volume #volume-slider.ui-slider .ui-slider-range-min {
-	background: #EC1A55;
-}
-
-#radio-controls #radio-volume #volume-slider.ui-slider .ui-slider-handle {
-	top: -6px;
-	height: 20px;
-	width: 20px;
-	border: 1px solid #666;
-	border-radius: 50px;
-	outline: none;
-	background: white;
-	border: none;
-}
-
-#radio-controls #radio-volume .glyphicon-volume-down {
-	width: 15px;
-	right: 9px;
-}
-
-#radio-controls #radio-volume .glyphicon-volume-up {
-	left: 13px;
 }
 
 /* Footer */
