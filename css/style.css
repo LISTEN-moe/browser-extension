@@ -156,8 +156,24 @@ a:hover {
 	height: 6px;
 }
 
+#volume-slider::-moz-range-track {
+	background: #ec1a55;
+	border: none;
+	border-radius: 5px;
+	height: 6px;
+}
+
 #volume-slider::-webkit-slider-thumb {
 	-webkit-appearance: none;
+	background: #fff;
+	border-radius: 50%;
+	border: none;
+	height: 16px;
+	margin-top: -5px;
+	width: 16px;
+}
+
+#volume-slider::-moz-range-thumb {
 	background: #fff;
 	border-radius: 50%;
 	border: none;
