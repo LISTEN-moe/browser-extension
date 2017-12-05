@@ -34,8 +34,7 @@
 	},
 
 	"background": {
-		"scripts": ["js/jquery-3.1.0.min.js", "js/background.js"],
-		"persistent": true
+		"scripts": ["js/jquery-3.1.0.min.js", "js/background.js"]
 	},
 
 	"commands": {
