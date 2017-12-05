@@ -80,9 +80,7 @@ function setInfo() {
 $(function() {
 
 	/* Does Scrolling Text */
-	var timeout;
-
-	timeout = setTimeout(autoScroll, 1000);
+	var timeout = setTimeout(autoScroll, 1000);
 
 	function autoScroll() {
 		var time = (Math.floor($('#now-playing-info span').text().length) / 10) * 500;
@@ -122,11 +120,9 @@ $(function() {
 	});
 
 	/* Initialize Volume Slider */
-	$('#volume-slider').slider({
-		min: 0, max: 100, range: 'min', value: radio.getVol(),
-		slide: function(event, ui) {
-			radio.setVol(Math.floor(ui.value));
-		}
+	document.querySelector('#volume-slider').value = radio.getVol();
+	document.querySelector('#volume-slider').addEventListener('input', (e) => {
+		radio.setVol(+e.target.value);
 	});
 
 	/* Sets Play/Pause depending on player status */
