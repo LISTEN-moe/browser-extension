@@ -1,14 +1,17 @@
 /* Shortcut for chrome.storage.local api */
-var storage = chrome.storage.local;
+const storage = chrome.storage.local;
+
+/* Browser Detection */
+const isFirefox = typeof InstallTrigger !== 'undefined';
 
 /* On Install */
-chrome.runtime.onInstalled.addListener(function (details) {
+chrome.runtime.onInstalled.addListener((details) => {
 	if (details.reason === 'update')
 		notifications.create('LISTEN.moe', `Extension has updated to v${chrome.runtime.getManifest().version}`);
 });
 
 /* Defaults */
-var defaults = {
+const defaults = {
 	volume: 50,
 	enableAutoplay: false,
 	enableNotifications: true,
@@ -17,28 +20,32 @@ var defaults = {
 };
 
 /* Create player */
-var player = $('<audio id="listen-moe" autoplay>').appendTo('body')[0];
-
+const player = document.createElement('audio');
+player.setAttribute('id', 'listen-moe');
+player.setAttribute('autoplay', true);
 
 /* Storage Items */
-var storageItems = {};
+let storageItems = {};
 
 /* Gets stored values if any and applies them */
-storage.get(defaults, function(items) {
-	if (typeof items.volume !== 'undefined') radio.setVol(items.volume);
-	if (items.enableAutoplay) radio.enable();
+storage.get(defaults, (items) => {
+	if (typeof items.volume !== 'undefined')
+		radio.setVol(items.volume);
+	if (items.enableAutoplay)
+		radio.enable();
 	storageItems = items;
 });
 
 /* If the token is updated, update the variable here and attempt to authenticate with the WS */
-chrome.storage.onChanged.addListener(function(changes) {
-	for (var item in changes) {
+chrome.storage.onChanged.addListener((changes) => {
+	for (let item in changes) {
 		storageItems[item] = changes[item].newValue;
-		if (item === 'authToken') radio.socket.sendToken();
+		if (item === 'authToken')
+			radio.socket.sendToken();
 	}
 });
 
-var radio = {
+const radio = {
 	enable: function() {
 		return player.setAttribute('src', 'https://listen.moe/stream');
 	},
@@ -49,7 +56,7 @@ var radio = {
 		return radio.isPlaying() ? radio.disable() : radio.enable();
 	},
 	isPlaying: function() {
-		return player.paused ? false : true;
+		return !player.paused;
 	},
 	setVol: function(vol) {
 		if (typeof vol !== 'undefined' && Number.isInteger(vol) ) {
@@ -91,19 +98,17 @@ var radio = {
 			radio.socket.ws.onclose = function() {
 				console.log('Welp. The connection was closed :(');
 				console.log('Reconnecting...');
-				// radio.socket.data.lastSongID = -1;
 				setTimeout(radio.socket.init, 10000);
 			};
 
 			radio.socket.ws.onmessage = function(response) {
 				if (response.data !== '') {
 
-					var data;
+					let data;
 					try { data = JSON.parse(response.data); }
 					catch (err) { console.error(err); }
-					if (!data || data.reason) return;
 
-					console.log(data);
+					if (!data || data.reason) return;
 
 					radio.data = data;
 
@@ -116,6 +121,7 @@ var radio = {
 						- the websocket drops then reconnects
 						- the websocket returns the extended info
 					*/
+					
 					if (data.song_id !== radio.socket.data.lastSongID) {
 
 						/* Check if event is in progress */
@@ -147,48 +153,54 @@ var radio = {
 		},
 		sendToken: function() {
 			if (storageItems.authToken) {
-				$.ajax({
-					url: "https://listen.moe/api/user",
-					type: 'GET',
-					headers: { 'Authorization': 'Bearer ' + storageItems.authToken },
-					success: function(response) {
-						radio.socket.ws.send(JSON.stringify({ token: storageItems.authToken }))
-					},
-					error: function(error) { console.error(error); }
+
+				const headers = new Headers({
+					'Authorization': 'Bearer ' + storageItems.authToken
 				});
+
+				fetch('https://listen.moe/api/user', {
+					method: 'GET',
+					headers
+				})
+					.then(res => res.json())
+					.then((response) => {
+						radio.socket.ws.send(JSON.stringify({ token: storageItems.authToken }));
+					})
+					.catch(console.error);
+
 			}
 
 		}
 	},
 	toggleFavorite: function(song) {
-		return new Promise(function(resolve, reject) {
-			$.ajax({
-				url: 'https://listen.moe/api/songs/favorite',
-				type: 'POST',
-				headers: { 'Authorization': 'Bearer ' + storageItems.authToken },
-				contentType: 'application/json;charset=utf-8',
-				data: JSON.stringify({ song }),
-				success: function (response) {
-					if (response.success) {
-						resolve(response.favorite);
-						/* Update the info set in the background page. Also making sure the song hasn't changed while the request was being made */
-						if (radio.data.song_id === song)
-							radio.data.extended.favorite = !radio.data.extended.favorite;
-					} else {
-						reject(error);
-					}
-				},
-				error: function (error) {
-					reject(error);
-				}
+		return new Promise((resolve, reject) => {
+
+			const headers = new Headers({
+				'Authorization': 'Bearer ' + storageItems.authToken,
+				'Content-Type': 'application/x-www-form-urlencoded'
 			});
+
+			fetch('https://listen.moe/api/songs/favorite', {
+				method: 'POST',
+				headers,
+				body: `song=${song}`
+			})
+				.then(res => res.json())
+				.then((response) => {
+					resolve(response.favorite);
+						/* Update the info set in the background page. Also making sure the song hasn't changed while the request was being made */
+					if (radio.data.song_id === song)
+						radio.data.extended.favorite = !radio.data.extended.favorite;
+				})
+				.catch(reject);
+
 		});
 	}
 };
 
 radio.socket.init();
 
-chrome.commands.onCommand.addListener(function(command) {
+chrome.commands.onCommand.addListener((command) => {
 	if (command === 'toggle_radio')
 		radio.toggle();
 	else if (command === 'vol_up')
@@ -196,24 +208,22 @@ chrome.commands.onCommand.addListener(function(command) {
 	else if (command === 'vol_down')
 		(radio.getVol() < 5) ? radio.setVol(0) : radio.setVol(Math.floor(radio.getVol() - 5));
 	else if (command === 'now_playing') {
-		var npText = /\s/g.test(radio.data.requested_by) ? `🎉 ${radio.data.requested_by}` : 'Now Playing'; 
+		const npText = /\s/g.test(radio.data.requested_by) ? `🎉 ${radio.data.requested_by}` : 'Now Playing'; 
 		notifications.create(npText, radio.data.song_name, radio.data.artist_name, false, (radio.data.extended ? true : false));
 	}
 });
 
 /* Modify Request Header to change UserAgent */
-if (typeof InstallTrigger === 'undefined') {
-	chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {
-		if (details.tabId === -1) {
-			for (var header of details.requestHeaders) {
-				if (header.name === 'User-Agent') header.value = `${chrome.runtime.getManifest().name} Chrome Extension v${chrome.runtime.getManifest().version}`
-			}
+chrome.webRequest.onBeforeSendHeaders.addListener((details) => {
+	if (details.tabId === -1) {
+		for (let header of details.requestHeaders) {
+			if (header.name === 'User-Agent') header.value = `${chrome.runtime.getManifest().name} Chrome Extension v${chrome.runtime.getManifest().version}`
 		}
-		return {requestHeaders: details.requestHeaders}
-	}, { urls: [ "*://listen.moe/api/*", "*://listen.moe/stream" ] }, ["blocking", "requestHeaders"]);
-}
+	}
+	return {requestHeaders: details.requestHeaders}
+}, { urls: [ "*://listen.moe/api/*", "*://listen.moe/stream" ] }, ["blocking", "requestHeaders"]);
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 	if (request.type === 'open') {
 		if (request.value === 'keyshortcuts') chrome.tabs.create({ url: 'chrome://extensions/configureCommands' });
@@ -221,48 +231,51 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 });
 
-var notifications = {
-	"create": function(title, message, altText, sticky, showFavoriteButton) {
+const notifications = {
+	create: function(title, message, altText, sticky, showFavoriteButton) {
 
 		if (!title || !message) return;
 
-		var notificationContent = {
+		let notificationContent = {
 			type: 'basic',
 			title, message,
-			iconUrl: 'images/logo128.png',
-			requireInteraction: sticky || false
+			iconUrl: 'images/logo128.png'
 		};
 
-		if (altText && typeof altText === 'string') notificationContent.contextMessage = altText;
+		if (!isFirefox)
+			notificationContent.requireInteraction = sticky || false;
 
-		var buttonFuntions = [];
-
-		if (showFavoriteButton) {
-			notificationContent.buttons = [{ title: radio.data.extended.favorite ? 'Remove from Favorites' : 'Add to Favorites' }]
+		if (altText && typeof altText === 'string') {
+			/* Firefox does not have contentMessage support yet. */
+			if (!isFirefox)
+				notificationContent.contextMessage = altText;
+			else
+				notificationContent.message += '\n' + altText;
 		}
 
-		var id = 'notification_' + Date.now();
+		if (showFavoriteButton)
+			notificationContent.buttons = [{ title: radio.data.extended.favorite ? 'Remove from Favorites' : 'Add to Favorites' }]
+
+		let id = 'notification_' + Date.now();
 
 		chrome.notifications.create(id, notificationContent);
 
 		return id;
 
 	},
-	"update": function(id, options) {
+	update: function(id, options) {
 
 		chrome.notifications.update(id, options);
 
 	},
-	"clear": function(id, timeout) {
+	clear: function(id, timeout) {
 
-		setTimeout(function() {
-			chrome.notifications.clear(id);
-		}, timeout || 0);
+		setTimeout(() => chrome.notifications.clear(id), timeout || 0);
 
 	}
 };
 
-chrome.notifications.onButtonClicked.addListener(function(id, index) {
+chrome.notifications.onButtonClicked.addListener((id, index) => {
 	radio.toggleFavorite(radio.data.song_id).then(function(favorited) {
 		notifications.clear(id);
 		if (favorited)
@@ -275,6 +288,6 @@ chrome.notifications.onButtonClicked.addListener(function(id, index) {
 	});
 });
 
-chrome.notifications.onClicked.addListener(function(id) {
+chrome.notifications.onClicked.addListener((id) => {
 	chrome.notifications.clear(id);
 });
