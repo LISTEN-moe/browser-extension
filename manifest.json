@@ -4,9 +4,11 @@
 
 	"name": "LISTEN.moe",
 	"description": "Anime/Japanese Radio powered by LISTEN.moe!",
+
 	"version": "2017.8.29.1",
 	"version_name": "RO-500",
-	"minimum_chrome_version": "40.0.2214",
+
+	"minimum_chrome_version": "50.0.2661",
 
 	"options_ui": {
 		"page": "options/options.html",
@@ -34,7 +36,7 @@
 	},
 
 	"background": {
-		"scripts": ["js/jquery-3.1.0.min.js", "js/background.js"]
+		"scripts": ["js/background.js"]
 	},
 
 	"commands": {
