@@ -115,7 +115,7 @@ var radio = {
 						- the websocket drops then reconnects
 						- the websocket returns the extended info
 					*/
-					
+
 					if (data.song_id !== radio.socket.data.lastSongID) {
 
 						/* Check if event is in progress */
@@ -123,7 +123,7 @@ var radio = {
 
 							if (!radio.socket.data.eventInProgress)
 								notifications.create(`🎉 ${data.requested_by} has started!`, radio.data.song_name, radio.data.artist_name);
-							else
+							else if (radio.isPlaying())
 								notifications.create(`🎉 ${data.requested_by}`, radio.data.song_name, radio.data.artist_name);				
 
 							radio.socket.data.eventInProgress = true;
