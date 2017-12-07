@@ -5,7 +5,7 @@
 	"name": "LISTEN.moe",
 	"description": "Anime/Japanese Radio powered by LISTEN.moe!",
 
-	"version": "2017.8.29.1",
+	"version": "2017.12.7.1",
 	"version_name": "RO-500",
 
 	"minimum_chrome_version": "50.0.2661",
@@ -60,7 +60,7 @@
 	"content_scripts": [
 		{
 			"matches": ["https://listen.moe/*"],
-			"js": ["js/sweetalert2.min.js", "js/listenmoe.js"],
+			"js": ["js/listenmoe.js"],
 			"run_at": "document_end",
 			"all_frames": false
 		}
