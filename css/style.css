@@ -100,7 +100,7 @@ a:hover {
 	text-align: center;
 }
 
-#queue-container, #queue-user {
+#queue-container {
 	display: none;
 }
 
@@ -128,7 +128,7 @@ a:hover {
 	margin-right: 15px;
 }
 
-#radio-controls #radio-playpause .playpause:hover {
+#radio-controls #radio-playpause:hover {
 	cursor: pointer;
 	color: #EC1A55;
 }
@@ -140,8 +140,14 @@ a:hover {
 /* == Volume Slider == */
 
 #radio-volume #volume-slider {
-    vertical-align: text-top;
+	vertical-align: text-top;
 	width: 200px;
+}
+
+@-moz-document url-prefix() { 
+  #radio-volume #volume-slider {
+		vertical-align: sub;
+	}
 }
 
 #volume-slider {
@@ -201,7 +207,7 @@ a:hover {
 	margin-left: 20px;
 }
 
-#radio-controls #radio-favorite .toggle-favorite:hover {
+#radio-controls #radio-favorite #toggle-favorite:hover {
 	cursor: pointer;
 	color: #EC1A55 !important;
 }

@@ -1,174 +1,182 @@
 /* Shortcut for chrome.extension.getBackgroundPage(). Allows me to execute background.js functions */
-var background = chrome.extension.getBackgroundPage();
-var radio = background.radio;
-
-setInfo();
-background.addEventListener('songChanged', setInfo);
+const background = chrome.extension.getBackgroundPage();
+const radio = background.radio;
 
 function setInfo() {
 
-	var data = radio.data;
+	let data = radio.data;
 
 	/* Sets Current Listners */
-	$('#current-listeners').text(data.listeners);
+	document.querySelector('#current-listeners').innerText = data.listeners;
 
 	/* Sets Now Playing Info */
-	$('#now-playing-info span').text(`${data.artist_name ? data.artist_name + ' -' : ''} ${data.song_name} ${data.anime_name ? '[' + data.anime_name + ']' : ''}`);
+	document.querySelector('#now-playing-text').innerText = `${data.artist_name ? data.artist_name + ' -' : ''} ${data.song_name} ${data.anime_name ? '[' + data.anime_name + ']' : ''}`;
 
 	/* Sets Requester Info */
 	if (data.requested_by) {
-		if (/\s/g.test(data.requested_by)) {
-			$('#now-playing-request').show().text('🎉 ' + data.requested_by + ' 🎉');
-		} else {
-			$('#now-playing-request').show().text('Requested by ' + data.requested_by);
-		}
+		if (/\s/g.test(data.requested_by))
+			document.querySelector('#now-playing-request').innerText = `🎉 ${data.requested_by} 🎉`;
+		else
+			document.querySelector('#now-playing-request').innerText = `Requested by ${data.requested_by}`;
+		document.querySelector('#now-playing-request').style.display = 'block';
 	} else {
-		$('#now-playing-request').hide().text('');;
+		document.querySelector('#now-playing-request').style.display = 'none';
+		document.querySelector('#now-playing-request').innerText = '';
 	}
 
 	/* Saves Song ID */
-	$('.toggle-favorite').data('id', data.song_id);
+	document.querySelector('#toggle-favorite').dataset.id = data.song_id;
 
 	if (data.extended) {
 
-		$('#favs a').prop('href', 'https://listen.moe/#/favorites').text('View Favorites');
-		$('.toggle-favorite').show();
+		let queue = data.extended.queue;
+
+		document.querySelector('#favs a').setAttribute('href', 'https://listen.moe/#/favorites');
+		document.querySelector('#favs a').innerText = 'View Favorites';
+
+		document.querySelector('#toggle-favorite').style.display = 'block';
 
 		if (data.extended.favorite)
-			$('.toggle-favorite').removeClass('glyphicon-star-empty');
+			document.querySelector('#toggle-favorite').classList.remove('glyphicon-star-empty');
 		else
-			$('.toggle-favorite').addClass('glyphicon-star-empty');
+			document.querySelector('#toggle-favorite').classList.add('glyphicon-star-empty');
 
-		if (data.extended.queue.songsInQueue !== 0) {
+		if (queue.songsInQueue !== 0) {
 
-			$('#queue-container').show();
-			$('#queue-amount').text(data.extended.queue.songsInQueue);
+			document.querySelector('#queue-container').style.display = 'block';
+			document.querySelector('#queue-amount').innerText = queue.songsInQueue;
 
-			if (data.extended.queue.hasSongInQueue) {
+			if (queue.hasSongInQueue) {
 
-				$('#queue-user-before, #queue-user').show();
-				$('#queue-amount').parent().prop('title', 'You have ' + data.extended.queue.userSongsInQueue + ' queued song(s)').css('cursor', 'help');
+				document.querySelector('#queue-user-before').style.display = 'block';
 
-				if (data.extended.queue.inQueueBeforeUserSong === 0) $('#queue-user-before-amount').text('The next song is yours!');
-				else if (data.extended.queue.inQueueBeforeUserSong === 1) $('#queue-user-before-amount').text('There is ' + data.extended.queue.inQueueBeforeUserSong + ' song before your next song.');
-				else $('#queue-user-before-amount').text('There is ' + data.extended.queue.inQueueBeforeUserSong + ' songs before your next song.');
+				document.querySelector('#queue-amount').parentElement.setAttribute('title', `You have ${queue.songsInQueue} queued song(s)`)
+				document.querySelector('#queue-amount').parentElement.style.cursor = 'help';
+
+				if (data.extended.queue.inQueueBeforeUserSong === 0)
+					document.querySelector('#queue-user-before-amount').innerText = 'The next song is yours!';
+				else if (data.extended.queue.inQueueBeforeUserSong === 1)
+					document.querySelector('#queue-user-before-amount').innerText = `There is ${queue.inQueueBeforeUserSong} song before your next song.`;
+				else
+					document.querySelector('#queue-user-before-amount').innerText = `There is ${queue.inQueueBeforeUserSong} songs before your next song.`;
 
 			} else {
 
-				$('#queue-user-before, #queue-user').hide();
-				$('#queue-user-before-amount, #queue-user-amount').text('N/A');
-				$('#queue-amount').parent().prop('title', '').css('cursor', 'default');
+				document.querySelector('#queue-user-before').style.display = 'none';
+				document.querySelector('#queue-user-before-amount').innerText = 'N/A';
+				document.querySelector('#queue-amount').parentNode.setAttribute('title', '');
+				document.querySelector('#queue-amount').parentNode.style.cursor = 'default';
 
 			}
 
 		} else {
 
-			$("#queue-container").hide();
-			$('#queue-amount').text('N/A');
-			$('#queue-amount').parent().prop('title', '').css('cursor', 'default');
+			document.querySelector('#queue-container').style.display = 'none';
+			document.querySelector('#queue-amount').innerText = 'N/A';
+			document.querySelector('#queue-amount').parentNode.setAttribute('title', '');
+			document.querySelector('#queue-amount').parentNode.style.cursor = 'default';
 
 		}
 
 	} else {
 
-		$('#favs a').prop('href', 'https://listen.moe/#/auth').text('Login');
+		document.querySelector('#favs a').setAttribute('href', 'https://listen.moe/#/auth');
+		document.querySelector('#favs a').innerText = 'Login';
 
 	}
 
 }
 
-$(function() {
+/* Does Scrolling Text */
+let timeout = setTimeout(autoScroll, 1000);
 
-	/* Does Scrolling Text */
-	var timeout = setTimeout(autoScroll, 1000);
+function getElWidth(el) {
+	el = document.querySelector(el);
+	let elementCS = getComputedStyle(el);
+	return el.offsetWidth - (parseFloat(elementCS.paddingLeft) + parseFloat(elementCS.paddingRight));
+}
 
-	function autoScroll() {
-		var time = (Math.floor($('#now-playing-info span').text().length) / 10) * 500;
-		if ($('#now-playing-info span').width() > $('#now-playing-info').width()) {
-			clearTimeout(timeout);
-			$('#now-playing-text').stop().animate({
-				'margin-left': '-' + ($('#now-playing-info span').width() - $('#now-playing-info').width()) + 'px'
-			}, time, function() {
-				timeout = setTimeout(function() {
-					$('#now-playing-text').stop().animate({
-						'margin-left': '0px'
-					}, time / 4, function() {
-						timeout = setTimeout(autoScroll, 10000);
-					});
-				}, 3000);
-			});
-		}
+function autoScroll() {
+	let time = (Math.floor(document.querySelector('#now-playing-text').innerText.length) / 10) * 500;
+	if (getElWidth('#now-playing-text') > getElWidth('#now-playing-info')) {
+		clearTimeout(timeout);
+		let offset = (getElWidth('#now-playing-text') + 1) - getElWidth('#now-playing-info');
+		document.querySelector('#now-playing-text').style.transition = `margin ${time}ms ease-in-out`;
+		document.querySelector('#now-playing-text').style.marginLeft = -offset + 'px';
+		timeout = setTimeout(() => {
+			document.querySelector('#now-playing-text').style.transition = `margin ${time / 4}ms ease-in-out`;
+			document.querySelector('#now-playing-text').style.marginLeft = '0px';
+			setTimeout(() => timeout = setTimeout(autoScroll, 10000), time / 4);
+		}, time + 3000);
 	}
+}
 
-	$('#now-playing-info').hover(function() {
-		if ($('#now-playing-info span').width() > $('#now-playing-info').width()) {
-			clearTimeout(timeout);
-			$('#now-playing-text').stop().animate({
-				'margin-left': '-' + ($('#now-playing-info span').width() - $('#now-playing-info').width()) + 'px'
-			}, (Math.floor($('#now-playing-info span').text().length) / 10) * 500);
-		}
-	}, function() {
-		$('#now-playing-text').stop().animate({
-			'margin-left': '0px'
-		}, ((Math.floor($('#now-playing-info span').text().length) / 10) * 600) / 4, function() {
-			timeout = setTimeout(autoScroll, 10000);
-		});
-	});
-
-	$('#now-playing-info span').click(function(e) {
-		copyText(this.innerText);
-	});
-
-	/* Initialize Volume Slider */
-	document.querySelector('#volume-slider').value = radio.getVol();
-	document.querySelector('#volume-slider').addEventListener('input', (e) => {
-		radio.setVol(+e.target.value);
-	});
-
-	/* Sets Play/Pause depending on player status */
-	if (!radio.isPlaying()) $('.playpause').removeClass('glyphicon-pause');
-
-	/* Enable/Disable Player */
-	$('.playpause').click(function() {
-		if (radio.isPlaying()) {
-			$('.playpause').removeClass('glyphicon-pause');
-			radio.disable();
-		} else {
-			$('.playpause').addClass('glyphicon-pause');
-			radio.enable();
-		}
-	});
-
-	background.storage.get({ enableAutoplay: false }, function(items) {
-		$('#radio-autoplay').prop('checked', items.enableAutoplay).change(function() {
-			background.storage.set({ enableAutoplay: this.checked });
-		});
-	});
-
-	/* Favorites Button */
-	$('.toggle-favorite').click(function() {
-		var songID = $(this).data('id');
-		background.radio.toggleFavorite(songID).then(function(favorited) {
-			if (favorited)
-				$('.toggle-favorite').removeClass('glyphicon-star-empty');
-			else
-				$('.toggle-favorite').addClass('glyphicon-star-empty');
-		}).catch(console.error);
-	});
-
-	/* Opens Keyboard Shortcuts */
-	$('#settings a').click(function() {
-		chrome.runtime.openOptionsPage();
-	});
-
-	/* Radom character */
-
-
+document.querySelector('#now-playing-info').addEventListener('mouseenter', () => {
+	let time = (Math.floor(document.querySelector('#now-playing-text').innerText.length) / 10) * 500;
+	let offset = (getElWidth('#now-playing-text') + 1) - getElWidth('#now-playing-info');
+	if (getElWidth('#now-playing-text') > getElWidth('#now-playing-info')) {
+		clearTimeout(timeout);
+		document.querySelector('#now-playing-text').style.transition = `margin ${time}ms ease-in-out`;
+		document.querySelector('#now-playing-text').style.marginLeft = -offset + 'px';
+	}
 });
+
+document.querySelector('#now-playing-info').addEventListener('mouseleave', () => {
+	let time = (Math.floor(document.querySelector('#now-playing-text').innerText.length) / 10) * 500;
+	document.querySelector('#now-playing-text').style.transition = `margin ${time / 4}ms ease-in-out`;
+	document.querySelector('#now-playing-text').style.marginLeft = '0px';
+	setTimeout(() => timeout = setTimeout(autoScroll, 10000), time / 4)
+});
+
+/* Copy Artist and Song Title to Clipboard */
+document.querySelector('#now-playing-text').addEventListener('click', function() {
+	copyText(this.innerText);
+});
+
+/* Initialize Volume Slider */
+document.querySelector('#volume-slider').value = radio.getVol();
+document.querySelector('#volume-slider').addEventListener('input', (e) => {
+	radio.setVol(+e.target.value);
+});
+
+/* Sets Play/Pause depending on player status */
+if (!radio.isPlaying()) 
+	document.querySelector('#radio-toggle').classList.remove('glyphicon-pause');
+
+/* Enable/Disable Player */
+document.querySelector('#radio-toggle').addEventListener('click', function() {
+	if (radio.isPlaying()) {
+		this.classList.remove('glyphicon-pause');
+		radio.disable();
+	} else {
+		this.classList.add('glyphicon-pause');
+		radio.enable();
+	}
+});
+
+/* Favorites Button */
+document.querySelector('#toggle-favorite').addEventListener('click', function() {
+	let songID = this.dataset.id;
+	background.radio.toggleFavorite(songID).then((favorited) => {
+		if (favorited)
+			this.classList.remove('glyphicon-star-empty');
+		else
+			this.classList.add('glyphicon-star-empty');
+	}).catch(console.error);
+});
+
+/* Opens Keyboard Shortcuts */
+document.querySelector('#settings a').addEventListener('click', () => {
+	chrome.runtime.openOptionsPage();
+});
+
+radio.player.addEventListener('songChanged', setInfo);
+
+setInfo();
 
 /* Copies text. Nothing more. */
 function copyText(text) {
-	var input = document.createElement('textarea');
+	let input = document.createElement('textarea');
 	document.body.appendChild(input);
 	input.value = text;
 	input.focus();

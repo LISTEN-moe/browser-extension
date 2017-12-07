@@ -1,8 +1,8 @@
 /* Shortcut for chrome.storage.local api */
-const storage = chrome.storage.local;
+var storage = chrome.storage.local;
 
 /* Browser Detection */
-const isFirefox = typeof InstallTrigger !== 'undefined';
+var isFirefox = typeof InstallTrigger !== 'undefined';
 
 /* On Install */
 chrome.runtime.onInstalled.addListener((details) => {
@@ -18,11 +18,6 @@ const defaults = {
 	enableEventNotifications: true,
 	authToken: ''
 };
-
-/* Create player */
-const player = document.createElement('audio');
-player.setAttribute('id', 'listen-moe');
-player.setAttribute('autoplay', true);
 
 /* Storage Items */
 let storageItems = {};
@@ -45,34 +40,33 @@ chrome.storage.onChanged.addListener((changes) => {
 	}
 });
 
-const radio = {
+var radio = {
+	player: createElement('audio', {
+		id: 'listen-moe',
+		autoplay: true
+	}),
 	enable: function() {
-		return player.setAttribute('src', 'https://listen.moe/stream');
+		return radio.player.setAttribute('src', 'https://listen.moe/stream');
 	},
 	disable: function() {
-		return player.setAttribute('src', '');
+		return radio.player.setAttribute('src', '');
 	},
 	toggle: function() {
 		return radio.isPlaying() ? radio.disable() : radio.enable();
 	},
 	isPlaying: function() {
-		return !player.paused;
+		return !radio.player.paused;
 	},
-	setVol: function(vol) {
-		if (typeof vol !== 'undefined' && Number.isInteger(vol) ) {
-			if ((vol / 100) >= 0 && (vol / 100) <= 1 ) {
-				player.volume = vol / 100;
-				storage.set({ volume: vol });
-				return 'Set Volume to', vol;
-			} else {
-				throw Error('Value must be between 0 and 100!');
+	setVol: function(volume) {
+		if (Number.isInteger(volume)) {
+			if ((volume / 100) >= 0 && (volume / 100) <= 1) {
+				radio.player.volume = volume / 100;
+				storage.set({ volume });
 			}
-		} else {
-			throw Error('Numerical Value Required!');
 		}
 	},
 	getVol: function() {
-		return player.volume * 100;
+		return radio.player.volume * 100;
 	},
 	data: {},
 	socket: {
@@ -86,22 +80,22 @@ const radio = {
 
 			radio.socket.ws = new WebSocket('wss://listen.moe/api/v2/socket');
 
-			radio.socket.ws.onopen = function() {
-				console.log('Alright we got a connection. \\o/');
+			radio.socket.ws.onopen = () => {
+				console.info('Alright we got a connection. \\o/');
 				setTimeout(radio.socket.sendToken, 1000);
-			}
+			};
 
-			radio.socket.ws.onerror = function() {
-				console.log('Uhh. Something happened');
-			}
+			radio.socket.ws.onerror = () => {
+				console.info('Uhh. Something happened');
+			};
 
-			radio.socket.ws.onclose = function() {
-				console.log('Welp. The connection was closed :(');
-				console.log('Reconnecting...');
+			radio.socket.ws.onclose = () => {
+				console.info('Welp. The connection was closed :(');
+				console.info('Reconnecting...');
 				setTimeout(radio.socket.init, 10000);
 			};
 
-			radio.socket.ws.onmessage = function(response) {
+			radio.socket.ws.onmessage = (response) => {
 				if (response.data !== '') {
 
 					let data;
@@ -113,7 +107,7 @@ const radio = {
 					radio.data = data;
 
 					/* Emit event for Popup.js */
-					window.dispatchEvent(radio.socket.event);
+					radio.player.dispatchEvent(radio.socket.event);
 
 					/* Display now playing when song changes
 						These checks are to make sure the info doesn't display when:
@@ -217,7 +211,8 @@ chrome.commands.onCommand.addListener((command) => {
 chrome.webRequest.onBeforeSendHeaders.addListener((details) => {
 	if (details.tabId === -1) {
 		for (let header of details.requestHeaders) {
-			if (header.name === 'User-Agent') header.value = `${chrome.runtime.getManifest().name} Chrome Extension v${chrome.runtime.getManifest().version}`
+			if (header.name === 'User-Agent')
+				header.value = `${chrome.runtime.getManifest().name} ${isFirefox ? 'Firefox' : 'Chrome'} Extension v${chrome.runtime.getManifest().version} (https://github.com/LISTEN-moe/chrome-extension)`
 		}
 	}
 	return {requestHeaders: details.requestHeaders}
@@ -247,13 +242,13 @@ const notifications = {
 
 		if (altText && typeof altText === 'string') {
 			/* Firefox does not have contentMessage support yet. */
-			if (!isFirefox)
-				notificationContent.contextMessage = altText;
-			else
+			if (isFirefox)
 				notificationContent.message += '\n' + altText;
+			else
+				notificationContent.contextMessage = altText;
 		}
 
-		if (showFavoriteButton)
+		if (!isFirefox && showFavoriteButton)
 			notificationContent.buttons = [{ title: radio.data.extended.favorite ? 'Remove from Favorites' : 'Add to Favorites' }]
 
 		let id = 'notification_' + Date.now();
@@ -264,25 +259,21 @@ const notifications = {
 
 	},
 	update: function(id, options) {
-
 		chrome.notifications.update(id, options);
-
 	},
 	clear: function(id, timeout) {
-
 		setTimeout(() => chrome.notifications.clear(id), timeout || 0);
-
 	}
 };
 
 chrome.notifications.onButtonClicked.addListener((id, index) => {
-	radio.toggleFavorite(radio.data.song_id).then(function(favorited) {
+	radio.toggleFavorite(radio.data.song_id).then((favorited) => {
 		notifications.clear(id);
 		if (favorited)
 			notifications.create('Favorites Updated!', `Added ${radio.data.song_name} to favorites!`);
 		else
 			notifications.create('Favorites Updated!', `Removed ${radio.data.song_name} from favorites!`);
-	}).catch(function(error) {
+	}).catch((error) => {
 		notifications.clear(id);
 		notifications.create('Error Updating Favorites!', 'An error has occured while trying to update your favorites!');
 	});
@@ -291,3 +282,12 @@ chrome.notifications.onButtonClicked.addListener((id, index) => {
 chrome.notifications.onClicked.addListener((id) => {
 	chrome.notifications.clear(id);
 });
+
+function createElement(tag, attrs, styles) {
+	let element = document.createElement(tag);
+	for (let key in attrs)
+		element.setAttribute(key, attrs[key]);
+	for (let key in styles)
+		element.style[key] = styles[key];
+	return element;
+}

@@ -2,7 +2,6 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-
 		<link rel="stylesheet" href="css/glyphicons.css">
 		<link rel="stylesheet" href="css/style.css">
 	</head>
@@ -48,7 +47,7 @@
 
 				<div id="radio-controls">
 					<div id="radio-playpause">
-						<span class="playpause glyphicon glyphicon-play glyphicon-pause"></span>
+						<span id="radio-toggle" class="glyphicon glyphicon-play glyphicon-pause"></span>
 					</div>
 
 					<div id="radio-volume">
@@ -58,7 +57,7 @@
 					</div>
 
 					<div id="radio-favorite">
-						<span class="toggle-favorite glyphicon glyphicon-star glyphicon-star-empty" style="display:none"></span>
+						<span id="toggle-favorite" class="glyphicon glyphicon-star glyphicon-star-empty" style="display:none"></span>
 					</div>
 				</div>
 
@@ -66,14 +65,12 @@
 
 			<div id="favs"><a target="_blank"></a></div>
 
-			<!-- <div id="credit">Powered By <a href="https://listen.moe/" target="_blank">LISTEN.moe</a></div> -->
 			<div id="settings"><a>Settings</a></div>
 
 			<div id="ram_rem"></div>
 
 		</div>
 
-		<script src="js/jquery-3.1.0.min.js"></script>
 		<script src="js/popup.js"></script>
 
 	</body>

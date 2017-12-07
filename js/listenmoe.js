@@ -1,11 +1,11 @@
 let elRandomSong;
 
 function initRandomRequests() {
-	if (window.location.hash !== '#/favorites' && window.location.hash !== '#/songs') {
-		return;
-	}
+
+	if (window.location.hash !== '#/favorites' && window.location.hash !== '#/songs') return;
 
 	setTimeout(() => {
+
 		elRandomSong = document.createElement('div');
 
 		elRandomSong.style.position = 'absolute';
@@ -16,8 +16,9 @@ function initRandomRequests() {
 		elRandomSong.dataset.enabled = true;
 
 		elRandomSong.addEventListener('click', () => {
+
 			if (elRandomSong.dataset.enabled) {
-				console.info('Randomly requesting one of the user\'s favorites.');
+				
 				elRandomSong.dataset.enabled = false;
 
 				const headers = new Headers({
@@ -30,6 +31,7 @@ function initRandomRequests() {
 				})
 					.then(res => res.json())
 					.then(data => {
+
 						if (!data.success) {
 							console.error(data.message);
 							return;
@@ -37,21 +39,24 @@ function initRandomRequests() {
 
 						const availableSongs = data.songs.filter(s => s.enabled !== false);
 						const randomSong = availableSongs[Math.floor(Math.random() * (availableSongs.length - 1))];
-						
-						console.info('Requesting random song:', randomSong);
 
-						setTimeout(() => requestSong(randomSong, data.extra.requests), 1000); // Cause rate-limits
+						setTimeout(() => requestSong(randomSong, data.extra.requests), 500); // Cause rate-limits
+
 					});
-			} else {
+
+			} else
 				console.error('Hold up fam. Wait for the previous request to finish.');
-			}
+
 		});
 
 		document.querySelector('.nav-center').appendChild(elRandomSong);
-	}, 500);
+
+	}, 1000);
+
 }
 
 function requestSong(songInfo, requestsRemaining) {
+
 	const headers = new Headers({
 		'Authorization': 'Bearer ' + localStorage.satellizer_token,
 		'Content-Type': 'application/x-www-form-urlencoded'
@@ -64,22 +69,23 @@ function requestSong(songInfo, requestsRemaining) {
 	})
 		.then(res => res.json())
 		.then(data => {
+
 			if (data.success) {
 				sweetAlert('Success!', `${songInfo.artist ? songInfo.artist + ' -' : ''} ${songInfo.title} has been randomly requested!`, 'success');
-
 				document.querySelector('span.nav-item.ng-binding').innerText = `${requestsRemaining - 1} Requests Left`;
 			} else {
 				sweetAlert('Oops...!', `Something went wrong. Error code: ${data.message}`, 'error');
 			}
 
 			elRandomSong.dataset.enabled = true;
+			
 		});
+
 }
 
 window.addEventListener('hashchange', () => {
 	const authToken = localStorage.satellizer_token || null;
 	chrome.storage.local.set({ authToken });
-
 	initRandomRequests();
 });
 
