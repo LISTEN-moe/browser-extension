@@ -11,7 +11,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 });
 
 /* Defaults */
-const defaults = {
+var defaults = {
 	volume: 50,
 	enableAutoplay: false,
 	enableNotifications: true,
