@@ -212,7 +212,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener((details) => {
 	if (details.tabId === -1) {
 		for (let header of details.requestHeaders) {
 			if (header.name === 'User-Agent')
-				header.value = `${chrome.runtime.getManifest().name} ${isFirefox ? 'Firefox' : 'Chrome'} Extension v${chrome.runtime.getManifest().version} (https://github.com/LISTEN-moe/chrome-extension)`
+				header.value = `${chrome.runtime.getManifest().name} ${isFirefox ? 'Firefox' : 'Chrome'} Extension v${chrome.runtime.getManifest().version} (https://github.com/LISTEN-moe/browser-extension)`
 		}
 	}
 	return {requestHeaders: details.requestHeaders}
