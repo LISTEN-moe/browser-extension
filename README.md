@@ -2,6 +2,12 @@
 
 ## Changelog
 
+### RO-500 (v2017.12.7.1)
+- Firefox support.
+- No longer using jQuery.
+- Removed the random request feature since it will soon be part of the site.
+- Event notifications will now only display once if the radio is not playing.
+
 ### RO-500 (v2017.5.29.1)
 - Added options page.
 - Keyboard Shortcuts. Access them via the options page.
