@@ -2,6 +2,9 @@
 
 ## Changelog
 
+### RO-500 (v2017.12.7.2)
+- Fixed issue where defaults weren't being set within the options page.
+
 ### RO-500 (v2017.12.7.1)
 - Firefox support.
 - No longer using jQuery.
