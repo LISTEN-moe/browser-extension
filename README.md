@@ -1,4 +1,4 @@
-# Official LISTEN.moe Chrome Extension
+# Official LISTEN.moe Extension
 
 ## Changelog
 
