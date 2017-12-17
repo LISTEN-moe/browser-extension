@@ -1,3 +1,18 @@
+<div align="center">
+	<p>
+		<img src="https://lolisafe.moe/DJwzPbWD.png" />
+	</p>
+	<br />
+	<p align="center">
+		<a href="https://chrome.google.com/webstore/detail/listenmoe/bjhaeboalljjbggiljjokojcedhmkfoa?hl=en" target="_blank">
+			<img src="https://img.shields.io/chrome-web-store/v/bjhaeboalljjbggiljjokojcedhmkfoa.svg?style=flat-square&maxAge=3600" alt="Chrome Web Store">
+		</a>
+		<a href="https://addons.mozilla.org/en-US/firefox/addon/listen-moe-extension/" target="_blank">
+			<img src="https://img.shields.io/amo/v/listen-moe-extension.svg?style=flat-square&maxAge=3600" alt="Firefox Addons">
+		</a>
+	</p>
+</div>
+
 # Official LISTEN.moe Extension
 
 ## Changelog
