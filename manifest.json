@@ -2,10 +2,11 @@
 
 	"manifest_version": 2,
 
+	"author": "pilar6195",
 	"name": "LISTEN.moe",
 	"description": "Anime/Japanese Radio powered by LISTEN.moe!",
 
-	"version": "2017.12.7.2",
+	"version": "2018.1.9.1",
 	"version_name": "RO-500",
 
 	"minimum_chrome_version": "50.0.2661",
@@ -30,9 +31,12 @@
 	],
 
 	"browser_action": {
-		"browser_style": false,
 		"default_popup": "popup.html",
-		"default_icon": "images/logo48.png"
+		"default_icon": {
+			"16": "images/logo16.png",
+			"24": "images/logo24.png",
+			"32": "images/logo32.png"
+		}
 	},
 
 	"background": {
