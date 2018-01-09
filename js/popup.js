@@ -134,9 +134,19 @@ document.querySelector('#now-playing-text').addEventListener('click', function()
 });
 
 /* Initialize Volume Slider */
-document.querySelector('#volume-slider').value = radio.getVol();
-document.querySelector('#volume-slider').addEventListener('input', (e) => {
+const volumeElement = document.querySelector('#volume-slider');
+
+volumeElement.value = radio.getVol();
+
+volumeElement.addEventListener('input', (e) => {
 	radio.setVol(+e.target.value);
+});
+
+document.querySelector('#radio-volume').addEventListener('wheel', (e) => {
+	volumeElement.value = e.deltaY < 0
+		? +volumeElement.value + 5 
+		: +volumeElement.value - 5;
+	radio.setVol(+volumeElement.value);
 });
 
 /* Sets Play/Pause depending on player status */
