@@ -17,6 +17,10 @@
 
 ## Changelog
 
+### RO-500 (v2018.1.9.1)
+- You can now adjust the volume with your mouse wheel by scrolling on the volume bar.
+- Removed unused files. Reduced filesize to ~200KB.
+
 ### RO-500 (v2017.12.7.2)
 - Fixed issue where defaults weren't being set within the options page.
 
