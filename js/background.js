@@ -143,7 +143,7 @@ var radio = {
 			}, heartbeat);
 		}
 	},
-	toggleFavorite: function(id, method = 'POST') {
+	toggleFavorite: function() {
 		return new Promise((resolve, reject) => {
 
 			const headers = new Headers({
@@ -151,6 +151,9 @@ var radio = {
 				'Accept': 'application/vnd.listen.v4+json',
 				'Content-Type': 'application/json'
 			});
+
+			const id = radio.data.song.id;
+			const method = radio.data.song.favorite ? 'DELETE': 'POST';
 
 			fetch(`https://listen.moe/api/favorites/${id}`, {
 				method, headers,

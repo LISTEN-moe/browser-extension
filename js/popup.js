@@ -27,10 +27,6 @@ function setInfo() {
 		document.querySelector('#now-playing-request').style.display = 'none';
 	}
 
-	/* Saves Song ID */
-	document.querySelector('#toggle-favorite').dataset.id = data.song.id;
-	document.querySelector('#toggle-favorite').dataset.favorite = data.song.favorite;
-
 	if (data.queue) {
 
 		document.querySelector('#queue-container').style.display = 'block';
@@ -70,7 +66,7 @@ function setInfo() {
 
 	if (radio.user) {
 
-		document.querySelector('#favs a').setAttribute('href', `https://listen.moe/u/${radio.user.username}/favorites`);
+		document.querySelector('#favs a').setAttribute('href', 'https://listen.moe/u/@me/favorites');
 		document.querySelector('#favs a').innerText = 'View Favorites';
 
 		document.querySelector('#toggle-favorite').style.display = 'block';
@@ -170,10 +166,8 @@ document.querySelector('#radio-toggle').addEventListener('click', function() {
 
 /* Favorites Button */
 document.querySelector('#toggle-favorite').addEventListener('click', function() {
-	let songID = this.dataset.id;
-	let method = this.dataset.favorite === 'true' ? 'DELETE' : 'POST';
 	this.classList.toggle('glyphicon-star-empty');
-	background.radio.toggleFavorite(songID, method).catch(console.error);
+	background.radio.toggleFavorite().catch(console.error);
 });
 
 /* Opens Keyboard Shortcuts */
