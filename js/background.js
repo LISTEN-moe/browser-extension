@@ -177,8 +177,7 @@ chrome.commands.onCommand.addListener((command) => {
 	else if (command === 'vol_down')
 		(radio.getVol() < 5) ? radio.setVol(0) : radio.setVol(Math.floor(radio.getVol() - 5));
 	else if (command === 'now_playing') {
-		const npText = /\s/g.test(radio.data.requested_by) ? `🎉 ${radio.data.requested_by}` : 'Now Playing'; 
-		notifications.create(npText, radio.data.song_name, radio.data.artist_name, false, (radio.data.extended ? true : false));
+		notifications.create('Now Playing', radio.data.song.title, radio.data.song.artists.map(a => a.name).join(', '));
 	}
 });
 
@@ -202,7 +201,7 @@ chrome.webRequest.onCompleted.addListener((details) => {
 }, { urls: ["*://listen.moe/api/*"] }, ["responseHeaders"]);
 
 const notifications = {
-	create: function(title, message, altText, sticky, showFavoriteButton) {
+	create: function(title, message, altText, sticky = false) {
 
 		if (!title || !message) return;
 
@@ -223,8 +222,8 @@ const notifications = {
 				notificationContent.contextMessage = altText;
 		}
 
-		if (!isFirefox && showFavoriteButton)
-			notificationContent.buttons = [{ title: radio.data.extended.favorite ? 'Remove from Favorites' : 'Add to Favorites' }]
+		if (!isFirefox && radio.user)
+			notificationContent.buttons = [{ title: radio.data.song.favorite ? 'Remove from Favorites' : 'Add to Favorites' }]
 
 		let id = 'notification_' + Date.now();
 
