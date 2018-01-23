@@ -8,17 +8,13 @@ html {
 	min-height: 145px;
 }
 
-body {
-	background-color: #1d1f2b;
-}
-
 html,
 body {
 	width: 480px;
 	margin: 0;
 	padding: 0;
 	color: #fff;
-	font: 300 12px 'Open Sans', 'Segoe UI', 'Tahoma', sans-serif;
+	font: 300 12px 'Open Sans', sans-serif;
 	letter-spacing: 0.05em !important;
 }
 
@@ -30,6 +26,19 @@ a {
 
 a:hover {
 	text-decoration: underline;
+}
+
+#background {
+	position: fixed;
+	background-image: url('/images/background.png');
+	background-size: cover;
+	top: -50px;
+	left: -50px;
+	height: calc(100% + 100px);
+	width: calc(100% + 100px);
+	filter: blur(10px);
+	-webkit-filter: blur(10px);
+	z-index: -1;
 }
 
 .glyphicon {
@@ -89,9 +98,12 @@ a:hover {
 #now-playing #now-playing-request {
 	display: none;
 	margin-top: 5px;
-	color: #ec1a55;
-	font-weight: bold !important;
 	cursor: default;
+}
+
+#now-playing #now-playing-request-user {
+	font-weight: bold !important;
+	color: #ec1a55;
 }
 
 /* == Queue Info == */

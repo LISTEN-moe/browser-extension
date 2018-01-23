@@ -7,72 +7,53 @@ function setInfo() {
 	let data = radio.data;
 
 	/* Sets Current Listners */
-	document.querySelector('#current-listeners').innerText = data.listeners;
+	document.querySelector('#current-listeners').innerText = (typeof data.listeners !== 'undefined') ? data.listeners : 'N/A';
+
+	const artists = data.song.artists.map((artist) => artist.name).join(', ');
 
 	/* Sets Now Playing Info */
-	document.querySelector('#now-playing-text').innerText = `${data.artist_name ? data.artist_name + ' -' : ''} ${data.song_name} ${data.anime_name ? '[' + data.anime_name + ']' : ''}`;
+	document.querySelector('#now-playing-text').innerText = `${artists ? artists + ' -' : ''} ${data.song.title || 'No data'}`;
 
 	/* Sets Requester Info */
-	if (data.requested_by) {
-		if (/\s/g.test(data.requested_by))
-			document.querySelector('#now-playing-request').innerText = `🎉 ${data.requested_by} 🎉`;
-		else
-			document.querySelector('#now-playing-request').innerText = `Requested by ${data.requested_by}`;
+	if (data.event) {
+		// Soon:tm:
+	} else if (data.requester) {
+		document.querySelector('#now-playing-request-user').innerText = data.requester.displayName;
+		document.querySelector('#now-playing-request-user').setAttribute('href', `https://listen.moe/u/${data.requester.username}`);
 		document.querySelector('#now-playing-request').style.display = 'block';
 	} else {
+		document.querySelector('#now-playing-request-user').innerText = '';
+		document.querySelector('#now-playing-request-user').setAttribute('href', '');
 		document.querySelector('#now-playing-request').style.display = 'none';
-		document.querySelector('#now-playing-request').innerText = '';
 	}
 
 	/* Saves Song ID */
-	document.querySelector('#toggle-favorite').dataset.id = data.song_id;
+	document.querySelector('#toggle-favorite').dataset.id = data.song.id;
+	document.querySelector('#toggle-favorite').dataset.favorite = data.song.favorite;
 
-	if (data.extended) {
+	if (data.queue) {
 
-		let queue = data.extended.queue;
+		document.querySelector('#queue-container').style.display = 'block';
+		document.querySelector('#queue-amount').innerText = data.queue.inQueue;
 
-		document.querySelector('#favs a').setAttribute('href', 'https://listen.moe/#/favorites');
-		document.querySelector('#favs a').innerText = 'View Favorites';
+		if (data.queue.inQueueByUser) {
 
-		document.querySelector('#toggle-favorite').style.display = 'block';
+			document.querySelector('#queue-user-before').style.display = 'block';
 
-		if (data.extended.favorite)
-			document.querySelector('#toggle-favorite').classList.remove('glyphicon-star-empty');
-		else
-			document.querySelector('#toggle-favorite').classList.add('glyphicon-star-empty');
+			document.querySelector('#queue-amount').parentElement.setAttribute('title', `You have ${data.queue.inQueueByUser} queued song(s)`)
+			document.querySelector('#queue-amount').parentElement.style.cursor = 'help';
 
-		if (queue.songsInQueue !== 0) {
-
-			document.querySelector('#queue-container').style.display = 'block';
-			document.querySelector('#queue-amount').innerText = queue.songsInQueue;
-
-			if (queue.hasSongInQueue) {
-
-				document.querySelector('#queue-user-before').style.display = 'block';
-
-				document.querySelector('#queue-amount').parentElement.setAttribute('title', `You have ${queue.songsInQueue} queued song(s)`)
-				document.querySelector('#queue-amount').parentElement.style.cursor = 'help';
-
-				if (data.extended.queue.inQueueBeforeUserSong === 0)
-					document.querySelector('#queue-user-before-amount').innerText = 'The next song is yours!';
-				else if (data.extended.queue.inQueueBeforeUserSong === 1)
-					document.querySelector('#queue-user-before-amount').innerText = `There is ${queue.inQueueBeforeUserSong} song before your next song.`;
-				else
-					document.querySelector('#queue-user-before-amount').innerText = `There is ${queue.inQueueBeforeUserSong} songs before your next song.`;
-
-			} else {
-
-				document.querySelector('#queue-user-before').style.display = 'none';
-				document.querySelector('#queue-user-before-amount').innerText = 'N/A';
-				document.querySelector('#queue-amount').parentNode.setAttribute('title', '');
-				document.querySelector('#queue-amount').parentNode.style.cursor = 'default';
-
-			}
+			if (data.queue.inQueueBeforeUser === 0)
+				document.querySelector('#queue-user-before-amount').innerText = 'The next song is yours!';
+			else if (data.queue.inQueueBeforeUser === 1)
+				document.querySelector('#queue-user-before-amount').innerText = `There is ${data.queue.inQueueBeforeUser} song before your next song.`;
+			else
+				document.querySelector('#queue-user-before-amount').innerText = `There is ${data.queue.inQueueBeforeUser} songs before your next song.`;
 
 		} else {
 
-			document.querySelector('#queue-container').style.display = 'none';
-			document.querySelector('#queue-amount').innerText = 'N/A';
+			document.querySelector('#queue-user-before').style.display = 'none';
+			document.querySelector('#queue-user-before-amount').innerText = 'N/A';
 			document.querySelector('#queue-amount').parentNode.setAttribute('title', '');
 			document.querySelector('#queue-amount').parentNode.style.cursor = 'default';
 
@@ -80,8 +61,31 @@ function setInfo() {
 
 	} else {
 
-		document.querySelector('#favs a').setAttribute('href', 'https://listen.moe/#/auth');
+		document.querySelector('#queue-container').style.display = 'none';
+		document.querySelector('#queue-amount').innerText = 'N/A';
+		document.querySelector('#queue-amount').parentNode.setAttribute('title', '');
+		document.querySelector('#queue-amount').parentNode.style.cursor = 'default';
+
+	}
+
+	if (radio.user) {
+
+		document.querySelector('#favs a').setAttribute('href', `https://listen.moe/u/${radio.user.username}/favorites`);
+		document.querySelector('#favs a').innerText = 'View Favorites';
+
+		document.querySelector('#toggle-favorite').style.display = 'block';
+
+		if (data.song.favorite)
+			document.querySelector('#toggle-favorite').classList.remove('glyphicon-star-empty');
+		else
+			document.querySelector('#toggle-favorite').classList.add('glyphicon-star-empty');
+
+	} else {
+
+		document.querySelector('#favs a').setAttribute('href', 'https://listen.moe/login');
 		document.querySelector('#favs a').innerText = 'Login';
+
+		document.querySelector('#toggle-favorite').style.display = 'none';
 
 	}
 
@@ -167,12 +171,9 @@ document.querySelector('#radio-toggle').addEventListener('click', function() {
 /* Favorites Button */
 document.querySelector('#toggle-favorite').addEventListener('click', function() {
 	let songID = this.dataset.id;
-	background.radio.toggleFavorite(songID).then((favorited) => {
-		if (favorited)
-			this.classList.remove('glyphicon-star-empty');
-		else
-			this.classList.add('glyphicon-star-empty');
-	}).catch(console.error);
+	let method = this.dataset.favorite === 'true' ? 'DELETE' : 'POST';
+	this.classList.toggle('glyphicon-star-empty');
+	background.radio.toggleFavorite(songID, method).catch(console.error);
 });
 
 /* Opens Keyboard Shortcuts */

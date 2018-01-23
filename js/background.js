@@ -24,19 +24,24 @@ let storageItems = {};
 
 /* Gets stored values if any and applies them */
 storage.get(defaults, (items) => {
+
 	if (typeof items.volume !== 'undefined')
 		radio.setVol(items.volume);
+
 	if (items.enableAutoplay)
 		radio.enable();
+
 	storageItems = items;
+
 });
 
 /* If the token is updated, update the variable here and attempt to authenticate with the WS */
 chrome.storage.onChanged.addListener((changes) => {
 	for (let item in changes) {
 		storageItems[item] = changes[item].newValue;
-		if (item === 'authToken')
-			radio.socket.sendToken();
+		if (item === 'authToken') {
+			radio.socket.auth();
+		}
 	}
 });
 
@@ -69,124 +74,94 @@ var radio = {
 		return radio.player.volume * 100;
 	},
 	data: {},
+	user: null,
 	socket: {
 		ws: null,
 		event: new Event('songChanged'),
-		data: {
-			eventInProgress: false,
-			lastSongID: -1
-		},
 		init: function() {
 
-			radio.socket.ws = new WebSocket('wss://listen.moe/api/v2/socket');
+			radio.socket.ws = new WebSocket('wss://listen.moe/gateway');
 
 			radio.socket.ws.onopen = () => {
 				console.info('Alright we got a connection. \\o/');
-				setTimeout(radio.socket.sendToken, 1000);
+				radio.socket.auth();
 			};
 
-			radio.socket.ws.onerror = () => {
-				console.info('Uhh. Something happened');
+			radio.socket.ws.onerror = (err) => {
+				console.error(err);
 			};
 
-			radio.socket.ws.onclose = () => {
-				console.info('Welp. The connection was closed :(');
-				console.info('Reconnecting...');
-				setTimeout(radio.socket.init, 10000);
+			radio.socket.ws.onclose = (err) => {
+				if (err) console.info(err);
+				console.info('%cWebsocket connection closed. Reconnecting...', 'color: #ff015b;', err);
+				clearInterval(radio.socket.sendHeartbeat);
+				setTimeout(radio.socket.init, 5000);
 			};
 
-			radio.socket.ws.onmessage = (response) => {
-				if (response.data !== '') {
+			radio.socket.ws.onmessage = (message) => {
 
-					let data;
-					try { data = JSON.parse(response.data); }
-					catch (err) { console.error(err); }
+				if (!message.data.length) return;
 
-					if (!data || data.reason) return;
+				let response;
 
-					radio.data = data;
+				try {
+					response = JSON.parse(message.data);
+				} catch (error) {
+					return console.error(err);
+				}
 
-					/* Emit event for Popup.js */
+				if (response.op === 0) {
+					radio.user = response.d.user;
+					return radio.socket.heartbeat(response.d.heartbeat);
+				}
+
+				if (response.op === 1) {
+
+					if (response.t !== 'TRACK_UPDATE' && response.t !== 'TRACK_UPDATE_REQUEST') return;
+
+					radio.data = response.d;
+
 					radio.player.dispatchEvent(radio.socket.event);
 
-					/* Display now playing when song changes
-						These checks are to make sure the info doesn't display when:
-						- the websocket first connects
-						- the websocket drops then reconnects
-						- the websocket returns the extended info
-					*/
-
-					if (data.song_id !== radio.socket.data.lastSongID) {
-
-						/* Check if event is in progress */
-						if (/\s/g.test(data.requested_by) && storageItems.enableEventNotifications) {
-
-							if (!radio.socket.data.eventInProgress)
-								notifications.create(`🎉 ${data.requested_by} has started!`, radio.data.song_name, radio.data.artist_name);
-							else if (radio.isPlaying())
-								notifications.create(`🎉 ${data.requested_by}`, radio.data.song_name, radio.data.artist_name);				
-
-							radio.socket.data.eventInProgress = true;
-
-						} else {
-
-							if (radio.socket.data.lastSongID !== -1 && radio.isPlaying() && storageItems.enableNotifications)
-								notifications.create('Now Playing', radio.data.song_name, radio.data.artist_name);
-
-							radio.socket.data.eventInProgress = false;
-
-						}
-
-						radio.socket.data.lastSongID = data.song_id;
-
-					}
-
 				}
+
 			};
 
 		},
-		sendToken: function() {
-			if (storageItems.authToken) {
-
-				const headers = new Headers({
-					'Authorization': 'Bearer ' + storageItems.authToken
-				});
-
-				fetch('https://listen.moe/api/user', {
-					method: 'GET',
-					headers
-				})
-					.then(res => res.json())
-					.then((response) => {
-						radio.socket.ws.send(JSON.stringify({ token: storageItems.authToken }));
-					})
-					.catch(console.error);
-
-			}
-
+		auth: function() {
+			clearInterval(radio.socket.sendHeartbeat);
+			radio.socket.ws.send(JSON.stringify({
+				op: 0, d: {
+					auth: 'Bearer ' + storageItems.authToken || ''
+				}
+			}));
+		},
+		heartbeat: function(heartbeat) {
+			radio.socket.sendHeartbeat = setInterval(() => {
+				console.info('%cSending heartbeat...', 'color: #ff015b;');
+				radio.socket.ws.send(JSON.stringify({ op: 9 }));
+			}, heartbeat);
 		}
 	},
-	toggleFavorite: function(song) {
+	toggleFavorite: function(id, method = 'POST') {
 		return new Promise((resolve, reject) => {
 
 			const headers = new Headers({
 				'Authorization': 'Bearer ' + storageItems.authToken,
-				'Content-Type': 'application/x-www-form-urlencoded'
+				'Accept': 'application/vnd.listen.v4+json',
+				'Content-Type': 'application/json'
 			});
 
-			fetch('https://listen.moe/api/songs/favorite', {
-				method: 'POST',
-				headers,
-				body: `song=${song}`
+			fetch(`https://listen.moe/api/favorites/${id}`, {
+				method, headers,
 			})
-				.then(res => res.json())
 				.then((response) => {
-					resolve(response.favorite);
-						/* Update the info set in the background page. Also making sure the song hasn't changed while the request was being made */
-					if (radio.data.song_id === song)
-						radio.data.extended.favorite = !radio.data.extended.favorite;
+					radio.socket.ws.send(JSON.stringify({ op: 2 }));
 				})
-				.catch(reject);
+				.catch(error => {
+					console.error(error);
+					radio.socket.ws.send(JSON.stringify({ op: 2 }));
+				});
 
 		});
 	}
@@ -218,13 +193,13 @@ chrome.webRequest.onBeforeSendHeaders.addListener((details) => {
 	return {requestHeaders: details.requestHeaders}
 }, { urls: [ "*://listen.moe/api/*", "*://listen.moe/stream" ] }, ["blocking", "requestHeaders"]);
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.webRequest.onCompleted.addListener((details) => {
 
-	if (request.type === 'open') {
-		if (request.value === 'keyshortcuts') chrome.tabs.create({ url: 'chrome://extensions/configureCommands' });
-	}
+	/* Update the data in the extension if the user favorites a song on the site */
+	if (details.tabId !== -1 && details.url.startsWith('https://listen.moe/api/favorites/'))
+		radio.socket.ws.send(JSON.stringify({ op: 2 }));
 
-});
+}, { urls: ["*://listen.moe/api/*"] }, ["responseHeaders"]);
 
 const notifications = {
 	create: function(title, message, altText, sticky, showFavoriteButton) {

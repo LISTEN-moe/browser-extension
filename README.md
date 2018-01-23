@@ -17,6 +17,9 @@
 
 ## Changelog
 
+### 002 (v2018.1.22.1)
+- Updated extension to support LISTEN.moe v3.0+1.0 (v4)
+
 ### RO-500 (v2018.1.9.1)
 - You can now adjust the volume with your mouse wheel by scrolling on the volume bar.
 - Removed unused files. Reduced filesize to ~200KB.
