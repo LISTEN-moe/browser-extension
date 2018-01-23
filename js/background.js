@@ -129,7 +129,7 @@ var radio = {
 					if (radio.data.song.id !== radio.socket.data.lastSongID) {
 
 						if (radio.socket.data.lastSongID !== -1 && radio.isPlaying() && storageItems.enableNotifications)
-							notifications.create('Now Playing', radio.data.song.title, radio.data.song.artists.map(a => a.name).join(', '));
+							notifications.create('Now Playing', radio.data.song.title, radio.data.song.artists.map(a => a.name).join(', '), false, (radio.user ? true : false));
 
 						radio.socket.data.lastSongID = radio.data.song.id;
 
@@ -171,11 +171,13 @@ var radio = {
 				method, headers,
 			})
 				.then((response) => {
+					resolve(!radio.data.song.favorite);
 					radio.socket.ws.send(JSON.stringify({ op: 2 }));
 				})
 				.catch(error => {
-					console.error(error);
 					radio.socket.ws.send(JSON.stringify({ op: 2 }));
+					console.error(error);
+					reject();
 				});
 
 		});
@@ -192,7 +194,7 @@ chrome.commands.onCommand.addListener((command) => {
 	else if (command === 'vol_down')
 		(radio.getVol() < 5) ? radio.setVol(0) : radio.setVol(Math.floor(radio.getVol() - 5));
 	else if (command === 'now_playing') {
-		notifications.create('Now Playing', radio.data.song.title, radio.data.song.artists.map(a => a.name).join(', '));
+		notifications.create('Now Playing', radio.data.song.title, radio.data.song.artists.map(a => a.name).join(', '), false, (radio.user ? true : false));
 	}
 });
 
@@ -216,7 +218,7 @@ chrome.webRequest.onCompleted.addListener((details) => {
 }, { urls: ["*://listen.moe/api/*"] }, ["responseHeaders"]);
 
 const notifications = {
-	create: function(title, message, altText, sticky = false) {
+	create: function (title, message, altText, sticky, showFavoriteButton) {
 
 		if (!title || !message) return;
 
@@ -237,7 +239,7 @@ const notifications = {
 				notificationContent.contextMessage = altText;
 		}
 
-		if (!isFirefox && radio.user)
+		if (!isFirefox && showFavoriteButton)
 			notificationContent.buttons = [{ title: radio.data.song.favorite ? 'Remove from Favorites' : 'Add to Favorites' }]
 
 		let id = 'notification_' + Date.now();
@@ -256,13 +258,13 @@ const notifications = {
 };
 
 chrome.notifications.onButtonClicked.addListener((id, index) => {
-	radio.toggleFavorite(radio.data.song_id).then((favorited) => {
+	radio.toggleFavorite().then((favorited) => {
 		notifications.clear(id);
 		if (favorited)
-			notifications.create('Favorites Updated!', `Added ${radio.data.song_name} to favorites!`);
+			notifications.create('Favorites Updated!', `Added '${radio.data.song.title}' to favorites!`);
 		else
-			notifications.create('Favorites Updated!', `Removed ${radio.data.song_name} from favorites!`);
-	}).catch((error) => {
+			notifications.create('Favorites Updated!', `Removed '${radio.data.song.title}' from favorites!`);
+	}).catch(() => {
 		notifications.clear(id);
 		notifications.create('Error Updating Favorites!', 'An error has occured while trying to update your favorites!');
 	});

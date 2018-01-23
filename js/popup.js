@@ -130,7 +130,7 @@ document.querySelector('#now-playing-info').addEventListener('mouseleave', () =>
 
 /* Copy Artist and Song Title to Clipboard */
 document.querySelector('#now-playing-text').addEventListener('click', function() {
-	copyText(this.innerText);
+	window.getSelection().selectAllChildren(this);
 });
 
 /* Initialize Volume Slider */
@@ -167,7 +167,7 @@ document.querySelector('#radio-toggle').addEventListener('click', function() {
 /* Favorites Button */
 document.querySelector('#toggle-favorite').addEventListener('click', function() {
 	this.classList.toggle('glyphicon-star-empty');
-	background.radio.toggleFavorite().catch(console.error);
+	background.radio.toggleFavorite();
 });
 
 /* Opens Keyboard Shortcuts */
@@ -178,14 +178,3 @@ document.querySelector('#settings a').addEventListener('click', () => {
 radio.player.addEventListener('songChanged', setInfo);
 
 setInfo();
-
-/* Copies text. Nothing more. */
-function copyText(text) {
-	let input = document.createElement('textarea');
-	document.body.appendChild(input);
-	input.value = text;
-	input.focus();
-	input.select();
-	document.execCommand('Copy');
-	input.remove();
-}
