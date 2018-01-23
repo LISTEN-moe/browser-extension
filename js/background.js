@@ -78,6 +78,9 @@ var radio = {
 	socket: {
 		ws: null,
 		event: new Event('songChanged'),
+		data: {
+			lastSongID: -1
+		},
 		init: function() {
 
 			radio.socket.ws = new WebSocket('wss://listen.moe/gateway');
@@ -122,6 +125,15 @@ var radio = {
 					radio.data = response.d;
 
 					radio.player.dispatchEvent(radio.socket.event);
+
+					if (radio.data.song.id !== radio.socket.data.lastSongID) {
+
+						if (radio.socket.data.lastSongID !== -1 && radio.isPlaying() && storageItems.enableNotifications)
+							notifications.create('Now Playing', radio.data.song.title, radio.data.song.artists.map(a => a.name).join(', '));
+
+						radio.socket.data.lastSongID = radio.data.song.id;
+
+					}
 
 				}
 
