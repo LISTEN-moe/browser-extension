@@ -109,7 +109,7 @@ var radio = {
 
 				try {
 					response = JSON.parse(message.data);
-				} catch (error) {
+				} catch (err) {
 					return console.error(err);
 				}
 
