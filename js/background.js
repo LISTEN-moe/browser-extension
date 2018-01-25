@@ -39,9 +39,8 @@ storage.get(defaults, (items) => {
 chrome.storage.onChanged.addListener((changes) => {
 	for (let item in changes) {
 		storageItems[item] = changes[item].newValue;
-		if (item === 'authToken') {
-			radio.socket.auth();
-		}
+		if (item === 'authToken')
+			radio.socket.ws.close(1000, 'Closed to reauthenticate');
 	}
 });
 
@@ -86,8 +85,13 @@ var radio = {
 			radio.socket.ws = new WebSocket('wss://listen.moe/gateway');
 
 			radio.socket.ws.onopen = () => {
-				console.info('Alright we got a connection. \\o/');
-				radio.socket.auth();
+				console.info('%cWebsocket connection established.', 'color: #ff015b;');
+				clearInterval(radio.socket.sendHeartbeat);
+				radio.socket.ws.send(JSON.stringify({
+					op: 0, d: {
+						auth: 'Bearer ' + storageItems.authToken || ''
+					}
+				}));
 			};
 
 			radio.socket.ws.onerror = (err) => {
@@ -95,10 +99,9 @@ var radio = {
 			};
 
 			radio.socket.ws.onclose = (err) => {
-				if (err) console.info(err);
 				console.info('%cWebsocket connection closed. Reconnecting...', 'color: #ff015b;', err);
 				clearInterval(radio.socket.sendHeartbeat);
-				setTimeout(radio.socket.init, 5000);
+				setTimeout(radio.socket.init, err.reason === 'Closed to reauthenticate' ? 1000 : 5000);
 			};
 
 			radio.socket.ws.onmessage = (message) => {
@@ -112,6 +115,8 @@ var radio = {
 				} catch (err) {
 					return console.error(err);
 				}
+
+				console.log("%cReceived ws data.", "color: #ff015b;", response);
 
 				if (response.op === 0) {
 					radio.user = response.d.user;
@@ -140,14 +145,6 @@ var radio = {
 			};
 
 		},
-		auth: function() {
-			clearInterval(radio.socket.sendHeartbeat);
-			radio.socket.ws.send(JSON.stringify({
-				op: 0, d: {
-					auth: 'Bearer ' + storageItems.authToken || ''
-				}
-			}));
-		},
 		heartbeat: function(heartbeat) {
 			radio.socket.sendHeartbeat = setInterval(() => {
 				console.info('%cSending heartbeat...', 'color: #ff015b;');
@@ -164,6 +161,9 @@ var radio = {
 				'Content-Type': 'application/json'
 			});
 
+			if (!radio.user)
+				return reject('Not Logged In');
+
 			const id = radio.data.song.id;
 			const method = radio.data.song.favorite ? 'DELETE': 'POST';
 
@@ -177,7 +177,7 @@ var radio = {
 				.catch(error => {
 					radio.socket.ws.send(JSON.stringify({ op: 2 }));
 					console.error(error);
-					reject();
+					reject(error);
 				});
 
 		});
