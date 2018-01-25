@@ -2,6 +2,10 @@
 const background = chrome.extension.getBackgroundPage();
 const radio = background.radio;
 
+/* Because firefox is retarded */
+if (background.isFirefox)
+	document.querySelector('#volume-slider').style.verticalAlign = 'sub';
+
 function setInfo() {
 
 	let data = radio.data;
@@ -9,10 +13,33 @@ function setInfo() {
 	/* Sets Current Listners */
 	document.querySelector('#current-listeners').innerText = (typeof data.listeners !== 'undefined') ? data.listeners : 'N/A';
 
-	const artists = data.song.artists.map((artist) => artist.name).join(', ');
+	const npElement = document.querySelector('#now-playing-text');
 
-	/* Sets Now Playing Info */
-	document.querySelector('#now-playing-text').innerText = `${artists ? artists + ' -' : ''} ${data.song.title || 'No data'}`;
+	while (npElement.hasChildNodes())
+		npElement.removeChild(npElement.lastChild);
+
+	for (let index in data.song.artists) {
+
+		let artist = data.song.artists[index];
+
+		let artistLink = background.createElement('a', {
+			class: 'artist',
+			href: `https://listen.moe/music/artists/${artist.id}`,
+			target: '_blank'
+		});
+
+		artistLink.appendChild(document.createTextNode(artist.name));
+		npElement.appendChild(artistLink);
+
+		if (index < data.song.artists.length - 1)
+			npElement.appendChild(document.createTextNode(', '));
+
+	}
+
+	if (data.song.artists.length)
+		npElement.appendChild(document.createTextNode(' - '));
+
+	npElement.appendChild(document.createTextNode(data.song.title || 'No data'));
 
 	/* Sets Requester Info */
 	if (data.event) {
@@ -66,22 +93,20 @@ function setInfo() {
 
 	if (radio.user) {
 
-		document.querySelector('#favs a').setAttribute('href', 'https://listen.moe/u/@me/favorites');
-		document.querySelector('#favs a').innerText = 'View Favorites';
-
 		document.querySelector('#toggle-favorite').style.display = 'block';
+		document.querySelector('#radio-login').style.display = 'none';
+		document.querySelector('#radio-favorite').classList.remove('login');
 
 		if (data.song.favorite)
-			document.querySelector('#toggle-favorite').classList.remove('glyphicon-star-empty');
+			document.querySelector('#toggle-favorite').classList.add('active');
 		else
-			document.querySelector('#toggle-favorite').classList.add('glyphicon-star-empty');
+			document.querySelector('#toggle-favorite').classList.remove('active');
 
 	} else {
 
-		document.querySelector('#favs a').setAttribute('href', 'https://listen.moe/login');
-		document.querySelector('#favs a').innerText = 'Login';
-
 		document.querySelector('#toggle-favorite').style.display = 'none';
+		document.querySelector('#radio-login').style.display = 'block';
+		document.querySelector('#radio-favorite').classList.add('login');
 
 	}
 
@@ -151,27 +176,27 @@ document.querySelector('#radio-volume').addEventListener('wheel', (e) => {
 
 /* Sets Play/Pause depending on player status */
 if (!radio.isPlaying()) 
-	document.querySelector('#radio-toggle').classList.remove('glyphicon-pause');
+	document.querySelector('#radio-toggle').classList.remove('icon-music-pause-a');
 
 /* Enable/Disable Player */
 document.querySelector('#radio-toggle').addEventListener('click', function() {
 	if (radio.isPlaying()) {
-		this.classList.remove('glyphicon-pause');
+		this.classList.remove('icon-music-pause-a');
 		radio.disable();
 	} else {
-		this.classList.add('glyphicon-pause');
+		this.classList.add('icon-music-pause-a');
 		radio.enable();
 	}
 });
 
 /* Favorites Button */
 document.querySelector('#toggle-favorite').addEventListener('click', function() {
-	this.classList.toggle('glyphicon-star-empty');
+	// this.classList.toggle('active');
 	background.radio.toggleFavorite();
 });
 
 /* Opens Keyboard Shortcuts */
-document.querySelector('#settings a').addEventListener('click', () => {
+document.querySelector('#settings').addEventListener('click', () => {
 	chrome.runtime.openOptionsPage();
 });
 

@@ -1,11 +1,14 @@
-@import url(https://fonts.googleapis.com/css?family=Open+Sans:300,600);
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,700);
 
 * {
-	transition: color 0.5s;
+	transition: color 0.1s;
+	text-rendering: optimizeLegibility;
 }
 
 html {
 	min-height: 145px;
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-font-smoothing: antialiased;
 }
 
 html,
@@ -14,8 +17,7 @@ body {
 	margin: 0;
 	padding: 0;
 	color: #fff;
-	font: 300 12px 'Open Sans', sans-serif;
-	letter-spacing: 0.05em !important;
+	font: 400 12px 'Open Sans', sans-serif;
 }
 
 a {
@@ -41,10 +43,8 @@ a:hover {
 	z-index: -1;
 }
 
-.glyphicon {
+[class*=" icon-"]:before, [class^=icon-]:before {
 	font-size: 20px;
-	user-select: none;
-	-moz-user-select: none;
 }
 
 #alert {
@@ -86,7 +86,10 @@ a:hover {
 
 #now-playing-text {
 	position: relative;
-	cursor: pointer;
+}
+
+#now-playing-text .artist {
+	font-weight: 700;
 }
 
 #now-playing #now-playing-info,
@@ -136,30 +139,16 @@ a:hover {
 
 /* == Play/Pause Button == */
 
-#radio-controls #radio-playpause {
-	margin-right: 15px;
-}
-
 #radio-controls #radio-playpause:hover {
 	cursor: pointer;
 	color: #EC1A55;
 }
 
-#radio-controls #radio-playpause .glyphicon-refresh {
-	animation: spin 2s infinite linear;
-}
-
 /* == Volume Slider == */
 
 #radio-volume #volume-slider {
-	vertical-align: text-top;
+	vertical-align: super;
 	width: 200px;
-}
-
-@-moz-document url-prefix() { 
-  #radio-volume #volume-slider {
-		vertical-align: sub;
-	}
 }
 
 #volume-slider {
@@ -171,32 +160,32 @@ a:hover {
 	background: #ec1a55;
 	border: none;
 	border-radius: 5px;
-	height: 6px;
+	height: 2px;
 }
 
 #volume-slider::-moz-range-track {
 	background: #ec1a55;
 	border: none;
 	border-radius: 5px;
-	height: 6px;
+	height: 2px;
 }
 
 #volume-slider::-webkit-slider-thumb {
 	-webkit-appearance: none;
-	background: #fff;
+	background: #ec1a55;
 	border-radius: 50%;
 	border: none;
 	height: 16px;
-	margin-top: -5px;
+	margin-top: -7px;
 	width: 16px;
 }
 
 #volume-slider::-moz-range-thumb {
-	background: #fff;
+	background: #ec1a55;
 	border-radius: 50%;
 	border: none;
 	height: 16px;
-	margin-top: -5px;
+	margin-top: -8px;
 	width: 16px;
 }
 
@@ -204,19 +193,11 @@ a:hover {
 	outline: none;
 }
 
-#radio-controls #radio-volume .glyphicon-volume-down {
-	right: 9px;
-	width: 15px;
-}
-
-#radio-controls #radio-volume .glyphicon-volume-up {
-	left: 13px;
-}
-
 /* == Favorite button == */
 
-#radio-controls #radio-favorite {
-	margin-left: 20px;
+#radio-controls #radio-favorite #toggle-favorite {
+	display: none;
+	margin-top: -2px;
 }
 
 #radio-controls #radio-favorite #toggle-favorite:hover {
@@ -224,24 +205,58 @@ a:hover {
 	color: #EC1A55 !important;
 }
 
-/* Footer */
+#radio-controls #radio-favorite #toggle-favorite.active {
+	color: #ff015b;
+}
 
-#favs {
+#radio-controls #radio-favorite #radio-login {
+	text-decoration: none;
+	color: grey;
+}
+
+/* Login */
+
+#radio-favorite.login:before {
+	content: '';
 	position: absolute;
-	left: 125px;
-	bottom: 5px;
+	margin-top: -25px;
+	margin-left: -7px;
+	transform: rotate(45deg);
+	border-bottom: 13px solid #ff015b;
+	border-left: 13px solid transparent;
+	display: none;
+}
+
+#radio-favorite.login:after {
+	content: 'Click to Login';
+	position: absolute;
+	margin-top: -64px;
+	margin-left: -70px;
+	background-color: #ff015b;
+	padding: 5px;
+	border-radius: 3px;
+	display: none;
+}
+
+#radio-favorite.login:hover:after,
+#radio-favorite.login:hover:before {
+	display: initial;
 }
 
 #settings {
 	position: absolute;
-	right: 10px;
+	right: 5px;
 	bottom: 5px;
+	cursor: pointer;
+}
+
+#settings:hover {
+	color: #EC1A55;
 }
 
 /* GIF */
 
-#ram_rem {
-	/* background-image: url('../images/ram_rem.gif') */
+#character {
 	background-image: url('../images/kanna.gif');
 	background-position-x: -3px;
 	background-size: cover;
