@@ -28,7 +28,9 @@ function setInfo() {
 			target: '_blank'
 		});
 
-		artistLink.appendChild(document.createTextNode(artist.name));
+		const artistName = artist.nameRomaji || artist.name;
+
+		artistLink.appendChild(document.createTextNode(artistName));
 		npElement.appendChild(artistLink);
 
 		if (index < data.song.artists.length - 1)

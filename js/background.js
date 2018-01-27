@@ -134,7 +134,7 @@ var radio = {
 					if (radio.data.song.id !== radio.socket.data.lastSongID) {
 
 						if (radio.socket.data.lastSongID !== -1 && radio.isPlaying() && storageItems.enableNotifications)
-							notifications.create('Now Playing', radio.data.song.title, radio.data.song.artists.map(a => a.name).join(', '), false, (radio.user ? true : false));
+							notifications.create('Now Playing', radio.data.song.title, radio.data.song.artists.map(a => a.nameRomaji || a.name).join(', '), false, (radio.user ? true : false));
 
 						radio.socket.data.lastSongID = radio.data.song.id;
 
@@ -194,7 +194,7 @@ chrome.commands.onCommand.addListener((command) => {
 	else if (command === 'vol_down')
 		(radio.getVol() < 5) ? radio.setVol(0) : radio.setVol(Math.floor(radio.getVol() - 5));
 	else if (command === 'now_playing') {
-		notifications.create('Now Playing', radio.data.song.title, radio.data.song.artists.map(a => a.name).join(', '), false, (radio.user ? true : false));
+		notifications.create('Now Playing', radio.data.song.title, radio.data.song.artists.map(a => a.nameRomaji || a.name).join(', '), false, (radio.user ? true : false));
 	}
 });
 
