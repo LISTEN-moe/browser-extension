@@ -7,7 +7,7 @@ var isFirefox = typeof InstallTrigger !== 'undefined';
 /* On Install */
 chrome.runtime.onInstalled.addListener((details) => {
 	if (details.reason === 'update')
-		notifications.create('LISTEN.moe', `Extension has updated to v${chrome.runtime.getManifest().version}`);
+		createNotification('LISTEN.moe', `Extension has updated to v${chrome.runtime.getManifest().version}`);
 });
 
 /* Defaults */
@@ -104,7 +104,7 @@ var radio = {
 				setTimeout(radio.socket.init, err.reason === 'Closed to reauthenticate' ? 1000 : 5000);
 			};
 
-			radio.socket.ws.onmessage = (message) => {
+			radio.socket.ws.onmessage = async (message) => {
 
 				if (!message.data.length) return;
 
@@ -131,10 +131,24 @@ var radio = {
 
 					radio.player.dispatchEvent(radio.socket.event);
 
+					if (radio.data.song.albums.length && radio.data.song.albums[0].image) {
+
+						const cover = await fetch(`https://cdn.listen.moe/covers/${radio.data.song.albums[0].image}`).then(data => data.blob())
+
+						const fileReader = new FileReader();
+						fileReader.onload = (e) => radio.data.song.coverData = e.target.result;
+						fileReader.readAsDataURL(cover);
+
+					} else {
+
+						radio.data.song.coverData = null;
+
+					}
+
 					if (radio.data.song.id !== radio.socket.data.lastSongID) {
 
 						if (radio.socket.data.lastSongID !== -1 && radio.isPlaying() && storageItems.enableNotifications)
-							notifications.create('Now Playing', radio.data.song.title, radio.data.song.artists.map(a => a.nameRomaji || a.name).join(', '), false, (radio.user ? true : false));
+							createNotification('Now Playing', radio.data.song.title, radio.data.song.artists.map(a => a.nameRomaji || a.name).join(', '), false, (radio.user ? true : false));
 
 						radio.socket.data.lastSongID = radio.data.song.id;
 
@@ -147,7 +161,6 @@ var radio = {
 		},
 		heartbeat: function(heartbeat) {
 			radio.socket.sendHeartbeat = setInterval(() => {
-				console.info('%cSending heartbeat...', 'color: #ff015b;');
 				radio.socket.ws.send(JSON.stringify({ op: 9 }));
 			}, heartbeat);
 		}
@@ -194,7 +207,7 @@ chrome.commands.onCommand.addListener((command) => {
 	else if (command === 'vol_down')
 		(radio.getVol() < 5) ? radio.setVol(0) : radio.setVol(Math.floor(radio.getVol() - 5));
 	else if (command === 'now_playing') {
-		notifications.create('Now Playing', radio.data.song.title, radio.data.song.artists.map(a => a.nameRomaji || a.name).join(', '), false, (radio.user ? true : false));
+		createNotification('Now Playing', radio.data.song.title, radio.data.song.artists.map(a => a.nameRomaji || a.name).join(', '), false, (radio.user ? true : false));
 	}
 });
 
@@ -217,56 +230,44 @@ chrome.webRequest.onCompleted.addListener((details) => {
 
 }, { urls: ["*://listen.moe/api/*"] }, ["responseHeaders"]);
 
-const notifications = {
-	create: function (title, message, altText, sticky, showFavoriteButton) {
+function createNotification(title, message, altText, sticky, showFavoriteButton) {
 
-		if (!title || !message) return;
+	if (!title || !message) return;
 
-		let notificationContent = {
-			type: 'basic',
-			title, message,
-			iconUrl: 'images/logo128.png'
-		};
+	const iconUrl = title === 'Now Playing'
+		? radio.data.song.coverData || 'images/logo128.png'
+		: 'images/logo128.png';
 
-		if (!isFirefox)
-			notificationContent.requireInteraction = sticky || false;
+	let notificationContent = {
+		type: 'basic',
+		title, message, iconUrl
+	};
 
-		if (altText && typeof altText === 'string') {
-			/* Firefox does not have contentMessage support yet. */
-			if (isFirefox)
-				notificationContent.message += '\n' + altText;
-			else
-				notificationContent.contextMessage = altText;
-		}
+	if (!isFirefox)
+		notificationContent.requireInteraction = sticky || false;
 
-		if (!isFirefox && showFavoriteButton)
-			notificationContent.buttons = [{ title: radio.data.song.favorite ? 'Remove from Favorites' : 'Add to Favorites' }]
-
-		let id = 'notification_' + Date.now();
-
-		chrome.notifications.create(id, notificationContent);
-
-		return id;
-
-	},
-	update: function(id, options) {
-		chrome.notifications.update(id, options);
-	},
-	clear: function(id, timeout) {
-		setTimeout(() => chrome.notifications.clear(id), timeout || 0);
+	if (altText && typeof altText === 'string') {
+		/* Firefox does not have contentMessage support yet. */
+		if (isFirefox)
+			notificationContent.message += '\n' + altText;
+		else
+			notificationContent.contextMessage = altText;
 	}
-};
+
+	if (!isFirefox && showFavoriteButton)
+		notificationContent.buttons = [{ title: radio.data.song.favorite ? 'Remove from Favorites' : 'Add to Favorites' }];
+
+	chrome.notifications.create('notification_' + Date.now(), notificationContent);
+
+}
 
 chrome.notifications.onButtonClicked.addListener((id, index) => {
 	radio.toggleFavorite().then((favorited) => {
-		notifications.clear(id);
-		if (favorited)
-			notifications.create('Favorites Updated!', `Added '${radio.data.song.title}' to favorites!`);
-		else
-			notifications.create('Favorites Updated!', `Removed '${radio.data.song.title}' from favorites!`);
+		chrome.notifications.clear(id);
+		createNotification('Updated Favorites!', `${favorited ? 'Added': 'Removed'} '${radio.data.song.title}' ${favorited ? 'to': 'from'} favorites!`);
 	}).catch(() => {
-		notifications.clear(id);
-		notifications.create('Error Updating Favorites!', 'An error has occured while trying to update your favorites!');
+		chrome.notifications.clear(id);
+		createNotification('Error Updating Favorites!', 'An error has occured while trying to update your favorites!');
 	});
 });
 
