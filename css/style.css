@@ -243,6 +243,13 @@ a:hover {
 	display: initial;
 }
 
+#switch {
+	position: absolute;
+	left: 130px;
+	bottom: 5px;
+	cursor: pointer;
+}
+
 #settings {
 	position: absolute;
 	right: 5px;

@@ -10,20 +10,29 @@ chrome.runtime.onInstalled.addListener((details) => {
 		createNotification('LISTEN.moe', `Extension has updated to v${chrome.runtime.getManifest().version}`);
 });
 
-/* Defaults */
-var defaults = {
+var radioType = {
+	JPOP: {
+		stream: 'https://listen.moe/stream',
+		gateway: 'wss://listen.moe/gateway'
+	},
+	KPOP: {
+		stream: 'https://listen.moe/kpop/stream',
+		gateway: 'wss://listen.moe/kpop/gateway'
+	}
+}
+
+/* Storage Items */
+var storageItems = {};
+
+/* Gets stored values if any and applies them */
+storage.get({
 	volume: 50,
 	enableAutoplay: false,
 	enableNotifications: true,
 	enableEventNotifications: true,
-	authToken: ''
-};
-
-/* Storage Items */
-let storageItems = {};
-
-/* Gets stored values if any and applies them */
-storage.get(defaults, (items) => {
+	authToken: '',
+	radioType: 'JPOP'
+}, (items) => {
 
 	if (typeof items.volume !== 'undefined')
 		radio.setVol(items.volume);
@@ -33,6 +42,8 @@ storage.get(defaults, (items) => {
 
 	storageItems = items;
 
+	radio.socket.init();
+
 });
 
 /* If the token is updated, update the variable here and attempt to authenticate with the WS */
@@ -40,7 +51,12 @@ chrome.storage.onChanged.addListener((changes) => {
 	for (let item in changes) {
 		storageItems[item] = changes[item].newValue;
 		if (item === 'authToken')
-			radio.socket.ws.close(1000, 'Closed to reauthenticate');
+			radio.socket.ws.close(4069, 'Closed to reauthenticate');
+		if (item === 'radioType') {
+			radio.socket.ws.close(4069, 'Closed to switch radio type');
+			if (radio.isPlaying())
+				radio.player.setAttribute('src', radioType[storageItems.radioType].stream);
+		}
 	}
 });
 
@@ -50,13 +66,18 @@ var radio = {
 		autoplay: true
 	}),
 	enable: function() {
-		return radio.player.setAttribute('src', 'https://listen.moe/stream');
+		return radio.player.setAttribute('src', radioType[storageItems.radioType].stream);
 	},
 	disable: function() {
 		return radio.player.setAttribute('src', '');
 	},
 	toggle: function() {
 		return radio.isPlaying() ? radio.disable() : radio.enable();
+	},
+	toggleType: function() {
+		const radioType = storageItems.radioType === 'JPOP' ? 'KPOP' : 'JPOP';
+		storage.set({ radioType });
+		return radioType === 'KPOP' ? 'JPOP' : 'KPOP';
 	},
 	isPlaying: function() {
 		return !radio.player.paused;
@@ -82,7 +103,7 @@ var radio = {
 		},
 		init: function() {
 
-			radio.socket.ws = new WebSocket('wss://listen.moe/gateway');
+			radio.socket.ws = new WebSocket(radioType[storageItems.radioType].gateway);
 
 			radio.socket.ws.onopen = () => {
 				console.info('%cWebsocket connection established.', 'color: #ff015b;');
@@ -99,9 +120,9 @@ var radio = {
 			};
 
 			radio.socket.ws.onclose = (err) => {
-				console.info('%cWebsocket connection closed. Reconnecting...', 'color: #ff015b;', err);
+				console.info('%cWebsocket connection closed. Reconnecting...', 'color: #ff015b;', err.reason);
 				clearInterval(radio.socket.sendHeartbeat);
-				setTimeout(radio.socket.init, err.reason === 'Closed to reauthenticate' ? 1000 : 5000);
+				setTimeout(radio.socket.init, err.code === 4069 ? 500 : 5000);
 			};
 
 			radio.socket.ws.onmessage = async (message) => {
@@ -171,7 +192,8 @@ var radio = {
 			const headers = new Headers({
 				'Authorization': 'Bearer ' + storageItems.authToken,
 				'Accept': 'application/vnd.listen.v4+json',
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
+				'Library': storageItems.radioType
 			});
 
 			if (!radio.user)
@@ -197,8 +219,6 @@ var radio = {
 	}
 };
 
-radio.socket.init();
-
 chrome.commands.onCommand.addListener((command) => {
 	if (command === 'toggle_radio')
 		radio.toggle();
@@ -206,9 +226,10 @@ chrome.commands.onCommand.addListener((command) => {
 		(radio.getVol() > 95) ? radio.setVol(100) : radio.setVol(Math.floor(radio.getVol() + 5));
 	else if (command === 'vol_down')
 		(radio.getVol() < 5) ? radio.setVol(0) : radio.setVol(Math.floor(radio.getVol() - 5));
-	else if (command === 'now_playing') {
+	else if (command === 'now_playing')
 		createNotification('Now Playing', radio.data.song.title, radio.data.song.artists.map(a => a.nameRomaji || a.name).join(', '), false, (radio.user ? true : false));
-	}
+	else if (command === 'toggle_type')
+		radio.toggleType();
 });
 
 /* Modify Request Header to change UserAgent */
@@ -220,7 +241,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener((details) => {
 		}
 	}
 	return {requestHeaders: details.requestHeaders}
-}, { urls: [ "*://listen.moe/api/*", "*://listen.moe/stream" ] }, ["blocking", "requestHeaders"]);
+}, { urls: [ "*://listen.moe/api/*", "*://listen.moe/stream", "*://listen.moe/kpop/stream" ] }, ["blocking", "requestHeaders"]);
 
 chrome.webRequest.onCompleted.addListener((details) => {
 

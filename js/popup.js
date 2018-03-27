@@ -1,10 +1,16 @@
 /* Shortcut for chrome.extension.getBackgroundPage(). Allows me to execute background.js functions */
 const background = chrome.extension.getBackgroundPage();
-const radio = background.radio;
 
 /* Because firefox is retarded */
-if (background.isFirefox)
+if (typeof InstallTrigger !== 'undefined')
 	document.querySelector('#volume-slider').style.verticalAlign = 'sub';
+
+if (!background && typeof InstallTrigger !== 'undefined') {
+	document.getElementById('now-playing-text').innerText = 'Extension is currently not supported in private mode due to restrictions in firefox.';
+	throw "Extension not supported in private mode";
+}
+
+const radio = background.radio;
 
 function setInfo() {
 
@@ -194,10 +200,17 @@ document.querySelector('#radio-toggle').addEventListener('click', function() {
 /* Favorites Button */
 document.querySelector('#toggle-favorite').addEventListener('click', function() {
 	// this.classList.toggle('active');
-	background.radio.toggleFavorite();
+	radio.toggleFavorite();
 });
 
-/* Opens Keyboard Shortcuts */
+/* Toggles Radio Type */
+document.querySelector('#switch').addEventListener('click', function() {
+	this.innerText = `Switch to ${radio.toggleType()}`;
+});
+
+document.querySelector('#switch').innerText = `Switch to ${background.storageItems.radioType === 'JPOP' ? 'KPOP' : 'JPOP'}`;
+
+/* Opens Settings */
 document.querySelector('#settings').addEventListener('click', () => {
 	chrome.runtime.openOptionsPage();
 });
