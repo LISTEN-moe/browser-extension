@@ -137,8 +137,6 @@ var radio = {
 					return console.error(err);
 				}
 
-				console.log("%cReceived ws data.", "color: #ff015b;", response);
-
 				if (response.op === 0) {
 					radio.user = response.d.user;
 					return radio.socket.heartbeat(response.d.heartbeat);
