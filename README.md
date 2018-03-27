@@ -17,6 +17,13 @@
 
 ## Changelog
 
+### 002 (v2018.3.27.1)
+- Added support for KPOP version of the radio.
+- Now displays the cover art (when available) in the Now Playing notification.
+- Now displays the artist name in romaji (when available).
+- Updated styling of extension. Now matches with the style of the site.
+- Fixed few issues with the Now Playing notification and the Keyboard Shortcuts.
+
 ### 002 (v2018.1.22.1)
 - Updated extension to support LISTEN.moe v3.0+1.0 (v4)
 
