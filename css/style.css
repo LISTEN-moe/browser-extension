@@ -1,7 +1,7 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,700);
 
 * {
-	transition: color 0.1s;
+	transition: color 0.2s;
 	text-rendering: optimizeLegibility;
 }
 
@@ -9,50 +9,45 @@ html {
 	min-height: 145px;
 	-moz-osx-font-smoothing: grayscale;
 	-webkit-font-smoothing: antialiased;
+	overflow: hidden;
 }
 
-html,
-body {
-	width: 480px;
+html, body {
 	margin: 0;
 	padding: 0;
 	color: #fff;
 	font: 400 12px 'Open Sans', sans-serif;
 }
 
+body {
+	width: 480px;
+}
+
 a {
-	color: #ec1a55;
+	color: #ff015b;
 	cursor: pointer;
 	text-decoration: none;
 }
 
 a:hover {
-	text-decoration: underline;
+	color: #fff !important;
 }
 
 #background {
-	position: fixed;
-	background-image: url('/images/background.png');
-	background-size: cover;
-	top: -50px;
-	left: -50px;
+	position: absolute;
+	background: url(/images/background.jpg);
+	background-position: 70% 90%;
 	height: calc(100% + 100px);
 	width: calc(100% + 100px);
-	filter: blur(10px);
-	-webkit-filter: blur(10px);
+	top: -50px;
+	left: -50px;
+	filter: blur(25px);
+	-webkit-filter: blur(25px);
 	z-index: -1;
 }
 
 [class*=" icon-"]:before, [class^=icon-]:before {
 	font-size: 20px;
-}
-
-#alert {
-	display: none;
-	margin: 30px 5px -30px 80px;
-	text-align: center;
-	font-weight: bold !important;
-	color: orangered;
 }
 
 /* == Listener Count == */
@@ -106,7 +101,7 @@ a:hover {
 
 #now-playing #now-playing-request-user {
 	font-weight: bold !important;
-	color: #ec1a55;
+	color: #ff015b;
 }
 
 /* == Queue Info == */
@@ -141,7 +136,7 @@ a:hover {
 
 #radio-controls #radio-playpause:hover {
 	cursor: pointer;
-	color: #EC1A55;
+	color: #ff015b;
 }
 
 /* == Volume Slider == */
@@ -157,14 +152,14 @@ a:hover {
 }
 
 #volume-slider::-webkit-slider-runnable-track {
-	background: #ec1a55;
+	background: #ff015b;
 	border: none;
 	border-radius: 5px;
 	height: 2px;
 }
 
 #volume-slider::-moz-range-track {
-	background: #ec1a55;
+	background: #ff015b;
 	border: none;
 	border-radius: 5px;
 	height: 2px;
@@ -172,7 +167,7 @@ a:hover {
 
 #volume-slider::-webkit-slider-thumb {
 	-webkit-appearance: none;
-	background: #ec1a55;
+	background: #ff015b;
 	border-radius: 50%;
 	border: none;
 	height: 16px;
@@ -181,7 +176,7 @@ a:hover {
 }
 
 #volume-slider::-moz-range-thumb {
-	background: #ec1a55;
+	background: #ff015b;
 	border-radius: 50%;
 	border: none;
 	height: 16px;
@@ -193,6 +188,11 @@ a:hover {
 	outline: none;
 }
 
+#radio-volume:hover .icon-volume-medium,
+#radio-volume:hover .icon-volume-high {
+	color: #ff015b;
+}
+
 /* == Favorite button == */
 
 #radio-controls #radio-favorite #toggle-favorite {
@@ -202,7 +202,7 @@ a:hover {
 
 #radio-controls #radio-favorite #toggle-favorite:hover {
 	cursor: pointer;
-	color: #EC1A55 !important;
+	color: #ff015b;
 }
 
 #radio-controls #radio-favorite #toggle-favorite.active {
@@ -248,6 +248,7 @@ a:hover {
 	left: 130px;
 	bottom: 5px;
 	cursor: pointer;
+	font-weight: 600;
 }
 
 #settings {
@@ -258,7 +259,7 @@ a:hover {
 }
 
 #settings:hover {
-	color: #EC1A55;
+	color: #ff015b;
 }
 
 /* GIF */
@@ -272,4 +273,56 @@ a:hover {
 	position: absolute;
 	bottom: 0px;
 	left: 5px;
+}
+
+/* KPOP Styles */
+
+body.kpop a,
+body.kpop #now-playing #now-playing-request-user,
+body.kpop #radio-controls #radio-playpause:hover,
+body.kpop #radio-controls #radio-favorite #toggle-favorite:hover,
+body.kpop #radio-controls #radio-favorite #toggle-favorite.active,
+body.kpop #settings:hover {
+	color: #30a9ed;
+}
+
+body.kpop #volume-slider::-webkit-slider-runnable-track {
+	background: #30a9ed !important;
+}
+
+body.kpop #volume-slider::-moz-range-track {
+	background: #30a9ed;
+}
+
+body.kpop #volume-slider::-webkit-slider-thumb {
+	background: #30a9ed;
+}
+
+body.kpop #volume-slider::-moz-range-thumb {
+	background: #30a9ed;
+}
+
+body.kpop #radio-volume:hover .icon-volume-medium,
+body.kpop #radio-volume:hover .icon-volume-high {
+	color: #30a9ed;
+}
+
+body.kpop #radio-favorite.login:after {
+	background-color: #30a9ed;
+}
+
+body.kpop #listenMoe {
+	margin-left: initial;
+}
+
+body.kpop #character {
+	display: none;
+}
+
+body.kpop #switch {
+	left: 25px;
+}
+
+body.kpop {
+	width: 375px;
 }

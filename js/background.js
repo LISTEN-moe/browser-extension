@@ -10,7 +10,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 		createNotification('LISTEN.moe', `Extension has updated to v${chrome.runtime.getManifest().version}`);
 });
 
-var radioType = {
+const radioType = {
 	JPOP: {
 		stream: 'https://listen.moe/stream',
 		gateway: 'wss://listen.moe/gateway'
@@ -75,9 +75,15 @@ var radio = {
 		return radio.isPlaying() ? radio.disable() : radio.enable();
 	},
 	toggleType: function() {
-		const radioType = storageItems.radioType === 'JPOP' ? 'KPOP' : 'JPOP';
-		storage.set({ radioType });
-		return radioType === 'KPOP' ? 'JPOP' : 'KPOP';
+		return new Promise(resolve => {
+			const radioType = storageItems.radioType === 'JPOP' ? 'KPOP' : 'JPOP';
+			storage.set({ radioType }, () => {
+				resolve({
+					active: radioType,
+					inactive: radioType === 'JPOP' ? 'KPOP' : 'JPOP'
+				})
+			});
+		});
 	},
 	isPlaying: function() {
 		return !radio.player.paused;

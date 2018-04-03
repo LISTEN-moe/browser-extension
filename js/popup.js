@@ -6,7 +6,7 @@ if (typeof InstallTrigger !== 'undefined')
 	document.querySelector('#volume-slider').style.verticalAlign = 'sub';
 
 if (!background && typeof InstallTrigger !== 'undefined') {
-	document.getElementById('now-playing-text').innerText = 'Extension is currently not supported in private mode due to restrictions in firefox.';
+	document.getElementById('now-playing-text').innerText = 'Extension is currently not supported in private mode.';
 	throw "Extension not supported in private mode";
 }
 
@@ -205,10 +205,21 @@ document.querySelector('#toggle-favorite').addEventListener('click', function() 
 
 /* Toggles Radio Type */
 document.querySelector('#switch').addEventListener('click', function() {
-	this.innerText = `Switch to ${radio.toggleType()}`;
+	radio.toggleType().then(status => {
+		this.innerText = `Switch to ${status.inactive}`;
+		if (status.active === 'KPOP')
+			document.body.classList.add('kpop');
+		else
+			document.body.classList.remove('kpop');
+	});
 });
 
 document.querySelector('#switch').innerText = `Switch to ${background.storageItems.radioType === 'JPOP' ? 'KPOP' : 'JPOP'}`;
+
+if (background.storageItems.radioType === 'KPOP')
+	document.body.classList.add('kpop');
+else
+	document.body.classList.remove('kpop');
 
 /* Opens Settings */
 document.querySelector('#settings').addEventListener('click', () => {
