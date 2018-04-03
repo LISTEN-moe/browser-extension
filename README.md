@@ -17,7 +17,7 @@
 
 ## Changelog
 
-### 002 (v2018.3.27.1)
+### 002 (v2018.4.3.1)
 - Added support for KPOP version of the radio.
 - Now displays the cover art (when available) in the Now Playing notification.
 - Now displays the artist name in romaji (when available).
