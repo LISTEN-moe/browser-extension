@@ -54,7 +54,7 @@ chrome.storage.onChanged.addListener((changes) => {
 			radio.socket.ws.close(4069, 'Closed to reauthenticate');
 		if (item === 'radioType') {
 			radio.socket.ws.close(4069, 'Closed to switch radio type');
-			if (radio.isPlaying())
+			if (radio.player.getAttribute('src'))
 				radio.player.setAttribute('src', radioType[storageItems.radioType].stream);
 		}
 	}
