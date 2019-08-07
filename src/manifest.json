@@ -6,8 +6,8 @@
 	"name": "LISTEN.moe",
 	"description": "Anime/Japanese Radio powered by LISTEN.moe!",
 
-	"version": "2018.4.3.1",
-	"version_name": "002",
+	"version": "2019.9.8.1",
+	"version_name": "Itsuki",
 
 	"minimum_chrome_version": "55.0.2883",
 
@@ -23,7 +23,8 @@
 	},
 
 	"permissions": [
-		"https://*.listen.moe/*",
+		"*://*.listen.moe/*",
+		"cookies",
 		"storage",
 		"webRequest",
 		"webRequestBlocking",
@@ -59,14 +60,5 @@
 		"vol_down": {
 			"description": "Lower Radio Volume"
 		}
-	},
-
-	"content_scripts": [
-		{
-			"matches": ["https://listen.moe/*"],
-			"js": ["js/listenmoe.js"],
-			"run_at": "document_end",
-			"all_frames": false
-		}
-	]
+	}
 }
