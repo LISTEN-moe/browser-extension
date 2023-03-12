@@ -1,58 +1,51 @@
-/* Shortcut for chrome.storage.local api */
-var storage = chrome.storage.local;
+/* global browser*/
 
-/* Browser Detection */
-var isFirefox = typeof InstallTrigger !== 'undefined';
-
-/* On Install */
-chrome.runtime.onInstalled.addListener(details => {
-	if (details.reason === 'update') {
-		createNotification('LISTEN.moe', `Extension has updated to v${chrome.runtime.getManifest().version}`);
-	}
-});
+var storage = browser.storage.local;
 
 const radioType = {
 	JPOP: {
-		stream: 'https://listen.moe/stream',
-		gateway: 'wss://listen.moe/gateway_v2'
+		stream: "https://listen.moe/stream",
+		gateway: "wss://listen.moe/gateway_v2",
 	},
 	KPOP: {
-		stream: 'https://listen.moe/kpop/stream',
-		gateway: 'wss://listen.moe/kpop/gateway_v2'
-	}
+		stream: "https://listen.moe/kpop/stream",
+		gateway: "wss://listen.moe/kpop/gateway_v2",
+	},
 };
 
 /* Storage Items */
 var storageItems = {};
 
 /* Gets stored values if any and applies them */
-storage.get({
-	volume: 50,
-	enableAutoplay: false,
-	enableNotifications: true,
-	enableEventNotifications: true,
-	radioType: 'JPOP'
-}, items => {
-	if (typeof items.volume !== 'undefined') {
-		radio.setVol(items.volume);
+storage.get(
+	{
+		volume: 50,
+		enableAutoplay: false,
+		enableNotifications: true,
+		radioType: "JPOP",
+	},
+	(items) => {
+		storageItems = items;
+		if (typeof items.volume !== "undefined") {
+			radio.setVol(items.volume);
+		}
+		if (items.enableAutoplay) {
+			radio.enable();
+		}
+		radio.socket.init();
 	}
+);
 
-	if (items.enableAutoplay) {
-		radio.enable();
-	}
-
-	storageItems = items;
-
-	radio.socket.init();
-});
-
-chrome.storage.onChanged.addListener(changes => {
+browser.storage.onChanged.addListener((changes) => {
 	for (let item in changes) {
 		storageItems[item] = changes[item].newValue;
-		if (item === 'radioType') {
-			radio.socket.ws.close(4069, 'Closed to switch radio type');
-			if (radio.player.getAttribute('src')) {
-				radio.player.setAttribute('src', radioType[storageItems.radioType].stream);
+		if (item === "radioType") {
+			radio.socket.ws.close(4069, "Closed to switch radio type");
+			if (radio.player.getAttribute("src")) {
+				radio.player.setAttribute(
+					"src",
+					radioType[storageItems.radioType].stream
+				);
 			}
 		}
 	}
@@ -61,22 +54,24 @@ chrome.storage.onChanged.addListener(changes => {
 /* Radio Functions */
 
 var radio = {
-	player: createElement('audio', {
-		id: 'listen-moe',
-		autoplay: true
-	}),
+	player: createElement("audio", { autoplay: true }),
+	data: {},
+	token: null,
 	enable() {
-		return this.player.setAttribute('src', radioType[storageItems.radioType].stream);
+		return this.player.setAttribute(
+			"src",
+			radioType[storageItems.radioType].stream
+		);
 	},
 	disable() {
-		return this.player.setAttribute('src', '');
+		return this.player.setAttribute("src", "");
 	},
 	toggle() {
 		return this.isPlaying ? this.disable() : this.enable();
 	},
 	toggleType() {
-		return new Promise(resolve => {
-			const type = storageItems.radioType === 'JPOP' ? 'KPOP' : 'JPOP';
+		return new Promise((resolve) => {
+			const type = storageItems.radioType === "JPOP" ? "KPOP" : "JPOP";
 			storage.set({ radioType: type }, () => {
 				resolve(type);
 			});
@@ -94,113 +89,120 @@ var radio = {
 	get getVol() {
 		return this.player.volume * 100;
 	},
-	data: {},
-	token: null,
+	get getData() {
+		return this.data;
+	},
+	get getToken() {
+		return this.token;
+	},
 	socket: {
 		ws: null,
-		event: new Event('songChanged'),
 		data: { lastSongID: -1 },
 		init() {
-
-			radio.socket.ws = new WebSocket(radioType[storageItems.radioType].gateway);
-
+			radio.socket.ws = new WebSocket(
+				radioType[storageItems.radioType].gateway
+			);
 			radio.socket.ws.onopen = () => {
-				console.info('%cWebsocket connection established.', 'color: #ff015b;');
 				clearInterval(radio.socket.sendHeartbeat);
 			};
-
-			radio.socket.ws.onerror = err => {
+			radio.socket.ws.onerror = (err) => {
 				console.error(err);
 			};
-
-			radio.socket.ws.onclose = err => {
-				console.info('%cWebsocket connection closed. Reconnecting...', 'color: #ff015b;', err.reason);
+			radio.socket.ws.onclose = (err) => {
 				clearInterval(radio.socket.sendHeartbeat);
 				setTimeout(radio.socket.init, err.code === 4069 ? 500 : 5000);
 			};
-
-			radio.socket.ws.onmessage = async message => {
-
-				if (!message.data.length) return;
-
+			radio.socket.ws.onmessage = async (message) => {
+				if (!message.data.length) {
+					return;
+				}
 				let response;
-
 				try {
 					response = JSON.parse(message.data);
 				} catch (err) {
 					console.error(err);
 					return;
 				}
-
 				if (response.op === 0) {
 					radio.socket.heartbeat(response.d.heartbeat);
 					return;
 				}
-
 				if (response.op === 1) {
-
-					if (response.t !== 'TRACK_UPDATE' && response.t !== 'TRACK_UPDATE_REQUEST') return;
-
+					if (
+						response.t !== "TRACK_UPDATE" &&
+						response.t !== "TRACK_UPDATE_REQUEST"
+					) {
+						return;
+					}
 					radio.data = response.d;
-
-					radio.data.song.favorite = await radio.checkFavorite(radio.data.song.id);
-
-					radio.player.dispatchEvent(radio.socket.event);
-
-					if (radio.data.song.albums.length && radio.data.song.albums[0].image) {
-
-						const cover = await fetch(`https://cdn.listen.moe/covers/${radio.data.song.albums[0].image}`).then(data => data.blob());
-
+					radio.data.song.favorite = await radio.checkFavorite(
+						radio.data.song.id
+					);
+					// try to send the songChange event
+					try {
+						await browser.runtime.sendMessage({
+							cmd: "songChanged",
+						});
+					} catch (e) {
+						// noop
+					}
+					if (
+						radio.data.song.albums.length &&
+						radio.data.song.albums[0].image
+					) {
+						const cover = await fetch(
+							`https://cdn.listen.moe/covers/${radio.data.song.albums[0].image}`
+						).then((data) => data.blob());
 						const fileReader = new FileReader();
-
-						fileReader.onload = e => {
+						fileReader.onload = (e) => {
 							radio.data.song.coverData = e.target.result;
 						};
-
 						fileReader.readAsDataURL(cover);
-
 					} else {
-
 						radio.data.song.coverData = null;
-
 					}
-
 					if (radio.data.song.id !== radio.socket.data.lastSongID) {
-
-						if (radio.socket.data.lastSongID !== -1 && radio.isPlaying && storageItems.enableNotifications) {
-							createNotification('Now Playing', radio.data.song.title, radio.data.song.artists.map(a => a.nameRomaji || a.name).join(', '), false, !!radio.token);
+						if (
+							radio.socket.data.lastSongID !== -1 &&
+							radio.isPlaying &&
+							storageItems.enableNotifications
+						) {
+							createNotification(
+								"Now Playing",
+								radio.data.song.title,
+								radio.data.song.artists
+									.map((a) => a.nameRomaji || a.name)
+									.join(", "),
+								false,
+								!!radio.token
+							);
 						}
-
 						radio.socket.data.lastSongID = radio.data.song.id;
-
 					}
-
 				}
-
 			};
-
 		},
 		heartbeat(heartbeat) {
 			radio.socket.sendHeartbeat = setInterval(() => {
 				radio.socket.ws.send(JSON.stringify({ op: 9 }));
 			}, heartbeat);
-		}
+		},
 	},
 	toggleFavorite() {
 		return new Promise((resolve, reject) => {
-			if (!radio.token) return;
-
+			if (!radio.token) {
+				return;
+			}
 			const headers = new Headers({
 				Authorization: `Bearer ${radio.token}`,
-				'Content-Type': 'application/json'
+				"Content-Type": "application/json",
 			});
-
 			const { id } = radio.data.song;
-
-			fetch('https://listen.moe/graphql', {
-				method: 'POST', headers,
+			fetch("https://listen.moe/graphql", {
+				method: "POST",
+				headers,
 				body: JSON.stringify({
-					operationName: 'favoriteSong',
+					operationName: "favoriteSong",
 					query: `
 						mutation favoriteSong($id: Int!) {
 							favoriteSong(id: $id) {
@@ -208,54 +210,57 @@ var radio = {
 							}
 						}
 					`,
-					variables: { id }
-				})
+					variables: { id },
+				}),
 			})
-				.then(res => res.json())
-				.then(data => {
+				.then((res) => res.json())
+				.then(async (data) => {
 					if (data.data) {
 						radio.data.song.favorite = !radio.data.song.favorite;
-						radio.player.dispatchEvent(radio.socket.event);
+						try {
+							await browser.runtime.sendMessage({
+								cmd: "songChanged",
+							});
+						} catch (e) {
+							//noop
+						}
 						resolve(radio.data.song.favorite);
 					} else if (data.errors) {
 						console.error(data.errors);
 						reject(data.errors);
 					}
 				})
-				.catch(err => {
+				.catch((err) => {
 					reject(err);
 				});
-
 		});
 	},
 	checkFavorite(id) {
-		return new Promise(resolve => {
+		return new Promise((resolve) => {
 			if (!radio.token) {
 				resolve(false);
 				return;
 			}
-
 			const headers = new Headers({
 				Authorization: `Bearer ${radio.token}`,
-				'Content-Type': 'application/json'
+				"Content-Type": "application/json",
 			});
-
 			const songs = [radio.data.song.id];
-
-			fetch('https://listen.moe/graphql', {
-				method: 'POST', headers,
+			fetch("https://listen.moe/graphql", {
+				method: "POST",
+				headers,
 				body: JSON.stringify({
-					operationName: 'checkFavorite',
+					operationName: "checkFavorite",
 					query: `
 						query checkFavorite($songs: [Int!]!) {
-  							checkFavorite(songs: $songs)
+							checkFavorite(songs: $songs)
 						}
 					`,
-					variables: { songs }
-				})
+					variables: { songs },
+				}),
 			})
-				.then(res => res.json())
-				.then(data => {
+				.then((res) => res.json())
+				.then((data) => {
 					if (data.data) {
 						resolve(data.data.checkFavorite.includes(id));
 					} else if (data.errors) {
@@ -263,18 +268,28 @@ var radio = {
 						resolve(false);
 					}
 				})
-				.catch(err => {
+				.catch((err) => {
 					console.error(err);
 					resolve(false);
 				});
 		});
-	}
+	},
 };
+
+browser.runtime.onMessage.addListener((data /*, sender*/) => {
+	let ret;
+	if (typeof radio[data.cmd] === "function") {
+		ret = radio[data.cmd](data["arg"]);
+	} else {
+		ret = radio[data.cmd];
+	}
+	return Promise.resolve(ret);
+});
 
 /* Get token */
 
-chrome.cookies.onChanged.addListener(details => {
-	if (details.cookie.name === 'token') {
+browser.cookies.onChanged.addListener((details) => {
+	if (details.cookie.name === "token") {
 		if (details.removed) {
 			radio.token = null;
 		} else {
@@ -283,98 +298,113 @@ chrome.cookies.onChanged.addListener(details => {
 	}
 });
 
-chrome.cookies.get({
-	url: 'https://listen.moe',
-	name: 'token'
-}, data => {
-	radio.token = data ? data.value : null;
-});
+browser.cookies.get(
+	{
+		url: "https://listen.moe",
+		name: "token",
+	},
+	(data) => {
+		radio.token = data ? data.value : null;
+	}
+);
 
 /* Keyboard Shortcuts */
 
-chrome.commands.onCommand.addListener(command => {
-	if (command === 'toggle_radio') {
-		radio.toggle();
-	} else if (command === 'vol_up') {
-		radio.getVol > 95
-			? radio.setVol(100)
-			: radio.setVol(Math.floor(radio.getVol + 5));
-	} else if (command === 'vol_down') {
-		radio.getVol < 5
-			? radio.setVol(0)
-			: radio.setVol(Math.floor(radio.getVol - 5));
-	} else if (command === 'now_playing') {
-		createNotification('Now Playing', radio.data.song.title, radio.data.song.artists.map(a => a.nameRomaji || a.name).join(', '), false, !!radio.token);
-	} else if (command === 'toggle_type') {
-		radio.toggleType();
-	}
-});
+browser.commands.onCommand.addListener((command) => {
 
-/* Modify Request Header to change UserAgent */
-chrome.webRequest.onBeforeSendHeaders.addListener(details => {
-	if (details.tabId === -1) {
-		for (let header of details.requestHeaders) {
-			if (header.name === 'User-Agent') {
-				header.value = `${chrome.runtime.getManifest().name} ${isFirefox ? 'Firefox' : 'Chrome'} Extension v${chrome.runtime.getManifest().version} (https://github.com/LISTEN-moe/browser-extension)`;
+	switch (command) {
+		case "toggle_radio":
+			radio.toggle();
+			break;
+		case "vol_up":
+			radio.getVol > 95
+				? radio.setVol(100)
+				: radio.setVol(Math.floor(radio.getVol + 5));
+			break;
+		case "vol_down":
+			radio.getVol < 5
+				? radio.setVol(0)
+				: radio.setVol(Math.floor(radio.getVol - 5));
+			break;
+		case "show_playing":
+			createNotification(
+				"Now Playing",
+				radio.data.song.title,
+				radio.data.song.artists
+					.map((a) => a.nameRomaji || a.name)
+					.join(", "),
+				false,
+				!!radio.token
+			);
+			break;
+		case "toggle_type":
+			radio.toggleType();
+			break;
+		case "toggle_fav":
+			createNotification(
+				"Login Required",
+				radio.data.song.title,
+				radio.data.song.artists
+					.map((a) => a.nameRomaji || a.name)
+					.join(", "),
+				false,
+				!!radio.token
+			);
+			if (radio.token !== null) {
+				radio.toggleFavorite();
+			} else {
+				browser.tabs.create({
+					url: "https://listen.moe",
+					active: true,
+				});
 			}
-		}
+			break;
+		case "save_playing_info":
+			let link = document.createElement("a");
+			link.setAttribute("target", "_blank");
+			link.setAttribute("download", radio.data.song.title + ".info");
+			link.setAttribute(
+				"href",
+				"data:text/plain;charset=utf-8,artists: " +
+					radio.data.song.artists
+						.map((a) => a.nameRomaji || a.name)
+						.join(", ")
+			);
+
+			setTimeout(() => {
+				link.remove();
+			}, 3000);
+
+			link.click();
+
+			break;
+		default:
+			break;
 	}
-	return { requestHeaders: details.requestHeaders };
-}, {
-	urls: [
-		'*://listen.moe/graphql',
-		'*://listen.moe/stream',
-		'*://listen.moe/kpop/stream'
-	]
-}, ['blocking', 'requestHeaders']);
+});
 
-function createNotification(title, message, altText, sticky, showFavoriteButton) {
-
-	if (!title || !message) return;
-
-	const iconUrl = title === 'Now Playing'
-		? radio.data.song.coverData || 'images/logo128.png'
-		: 'images/logo128.png';
-
+function createNotification(title, message, altText) {
+	if (!title || !message) {
+		return;
+	}
+	const iconUrl =
+		title === "Now Playing"
+			? radio.data.song.coverData || "icon.png"
+			: "icon.png";
 	let notificationContent = {
-		type: 'basic',
-		title, message, iconUrl
+		type: "basic",
+		title,
+		message,
+		iconUrl,
 	};
-
-	if (!isFirefox) {
-		notificationContent.requireInteraction = sticky || false;
+	if (altText && typeof altText === "string") {
+		notificationContent.message += `\n ${altText}`;
 	}
-
-	if (altText && typeof altText === 'string') {
-		/* Firefox does not have contentMessage support yet. */
-		if (isFirefox) {
-			notificationContent.message += `\n ${altText}`;
-		} else {
-			notificationContent.contextMessage = altText;
-		}
-	}
-
-	if (!isFirefox && showFavoriteButton) {
-		notificationContent.buttons = [{ title: radio.data.song.favorite ? 'Remove from Favorites' : 'Add to Favorites' }];
-	}
-
-	chrome.notifications.create(`notification_${Date.now()}`, notificationContent);
-
+	browser.notifications.create(
+		`notification_${Date.now()}`,
+		notificationContent
+	);
 }
-
-chrome.notifications.onButtonClicked.addListener(id => {
-	radio.toggleFavorite().then(favorited => {
-		chrome.notifications.clear(id);
-		createNotification('Updated Favorites!', `${favorited ? 'Added' : 'Removed'} '${radio.data.song.title}' ${favorited ? 'to' : 'from'} favorites!`);
-	}).catch(() => {
-		chrome.notifications.clear(id);
-		createNotification('Error Updating Favorites!', 'An error has occured while trying to update your favorites!');
-	});
-});
-
-chrome.notifications.onClicked.addListener(id => {
-	chrome.notifications.clear(id);
-});
 
 function createElement(tag, attrs, styles) {
 	let element = document.createElement(tag);
@@ -386,3 +416,4 @@ function createElement(tag, attrs, styles) {
 	}
 	return element;
 }
+
