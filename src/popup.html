@@ -1,77 +1,74 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="utf-8">
-		<link rel="stylesheet" href="css/style.css">
-	</head>
-	<body>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+	<progress id="songProgress" max="100" value="0" ></progress>
+	<div id="background"></div>
+	<div id="character"></div>
+	<div id="container">
 
-		<div id="background"></div>
-
-		<div id="character"></div>
-
-		<div id="container">
-
-			<div id="listeners">
-				<svg viewBox="0 0 25 25">
-					<use href="/icons.svg#svg-headphones" />
-				</svg>
-				<span>N/A</span>
-			</div>
-
-			<div id="player-container">
-
-				<div id="now-playing">
-
-					<div id="now-playing-text">
-						<span>Loading...</span>
-					</div>
-
-					<div id="now-playing-request">
-						Requested by <a target="_blank"></a>
-					</div>
-
-					<div id="now-playing-event">
-						♫♪.ılılıll <span></span> llılılı.♫♪
-					</div>
-
-				</div>
-
-				<div id="radio-controls">
-
-					<div id="radio-toggle">
-						<svg viewBox="0 0 25 25">
-							<use href="/icons.svg#svg-play" />
-							<use class="icon-alt" href="/icons.svg#svg-pause" />
-						</svg>
-					</div>
-
-					<div id="radio-volume">
-						<input id="volume-slider" type="range" min="0" max="100">
-					</div>
-
-					<div id="favorite-toggle">
-						<svg viewBox="0 0 25 25">
-							<use href="/icons.svg#svg-star" />
-							<use class="icon-alt" href="/icons.svg#svg-star-filled" />
-						</svg>
-					</div>
-
-				</div>
-
-			</div>
-
-			<a id="radio-type-toggle">Switch to J-POP</a>
-
-			<a id="settings">
-				<svg viewBox="0 0 25 25">
-					<use href="/icons.svg#svg-cog" />
-				</svg>
-			</a>
-
+		<div id="listeners">
+			<svg viewBox="0 0 25 25">
+				<use href="/icons.svg#svg-headphones" />
+			</svg>
+			<span>N/A</span>
+		</div>
+		<div id="numberProgress">
+			<span>-/-</span>
 		</div>
 
-		<script src="/js/popup.js"></script>
+		<div id="player-container">
 
-	</body>
-</html>
+			<div id="now-playing">
+
+				<div id="now-playing-text">
+					<span>Loading...</span>
+				</div>
+
+				<div id="now-playing-request">
+					Requested by <a target="_blank"></a>
+				</div>
+
+				<div id="now-playing-event">
+					♫♪.ılılıll <span></span> llılılı.♫♪
+				</div>
+
+			</div>
+
+			<div id="radio-controls">
+				<div id="radio-toggle">
+					<svg viewBox="0 0 25 25">
+						<use href="/icons.svg#svg-play" />
+						<use class="icon-alt" href="/icons.svg#svg-pause" />
+					</svg>
+				</div>
+
+				<div id="radio-volume">
+					<input id="volume-slider" type="range" min="0" max="100">
+				</div>
+
+				<div id="favorite-toggle">
+					<svg viewBox="0 0 25 25">
+						<use href="/icons.svg#svg-star" />
+						<use class="icon-alt" href="/icons.svg#svg-star-filled" />
+					</svg>
+				</div>
+			</div>
+		</div>
+
+		<a id="radio-type-toggle">Switch to J-POP</a>
+		<a id="settings">
+			<svg viewBox="0 0 25 25">
+				<use href="/icons.svg#svg-cog" />
+			</svg>
+		</a>
+		<a id="detach">
+			<svg viewBox="0 0 25 25">
+				<use href="/icons.svg#svg-detach" />
+			</svg>
+		</a>
+	</div>
+	<script src="/popup.js"></script>
+</body>
