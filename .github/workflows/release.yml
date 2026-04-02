@@ -1,0 +1,35 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v6
+      -
+        name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+      -
+        name: Install dependencies
+        run: bun install
+      -
+        name: Build & Zip - Chrome
+        run: bun run zip
+      -
+        name: Build & Zip - Firefox
+        run: bun run zip:firefox
+      -
+        name: Upload artifacts
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            .output/listen-moe-extension-*.zip
