@@ -1,6 +1,5 @@
 node_modules
 .output
 .wxt
-yarn-error.log
 *.zip
 src-old
