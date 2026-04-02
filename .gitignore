@@ -1,3 +1,6 @@
 node_modules
-project_files
+.output
+.wxt
 yarn-error.log
+*.zip
+src-old
