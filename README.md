@@ -15,86 +15,62 @@
 
 # Official LISTEN.moe Extension
 
-## Changelog
+A browser extension for [LISTEN.moe](https://listen.moe) - stream anime and J-pop/K-pop radio directly from your browser.
 
-### 002 (v2018.4.3.1)
-- Added support for KPOP version of the radio.
-- Now displays the cover art (when available) in the Now Playing notification.
-- Now displays the artist name in romaji (when available).
-- Updated styling of extension. Now matches with the style of the site.
-- Fixed few issues with the Now Playing notification and the Keyboard Shortcuts.
+## Features
 
-### 002 (v2018.1.22.1)
-- Updated extension to support LISTEN.moe v3.0+1.0 (v4)
+- Stream JPOP and KPOP radio stations
+- Now playing display with song title, artist, character CV info, and album art
+- Song progress tracking via metadata stream
+- Favorite songs (requires a LISTEN.moe account)
+- Song change and event notifications
+- Volume control with mouse wheel support
+- Keyboard shortcuts
+- Autoplay on browser start
+- Fallback stream support
 
-### RO-500 (v2018.1.9.1)
-- You can now adjust the volume with your mouse wheel by scrolling on the volume bar.
-- Removed unused files. Reduced filesize to ~200KB.
+## Tech Stack
 
-### RO-500 (v2017.12.7.2)
-- Fixed issue where defaults weren't being set within the options page.
+- [WXT](https://wxt.dev) - cross-browser extension framework
+- [Vue 3](https://vuejs.org) - UI with Composition API and `<script setup>`
+- [TypeScript](https://www.typescriptlang.org)
+- [Bun](https://bun.sh) - runtime and package manager
 
-### RO-500 (v2017.12.7.1)
-- Firefox support.
-- No longer using jQuery.
-- Removed the random request feature since it will soon be part of the site.
-- Event notifications will now only display once if the radio is not playing.
+## Development
 
-### RO-500 (v2017.5.29.1)
-- Added options page.
-- Keyboard Shortcuts. Access them via the options page.
-- Moved all web request stuff to the background page.
-- Websocket is now always connected allowing Now Playing notifications.
-- Updated icons.
-- Removed unused CSS.
+```bash
+# Install dependencies
+bun install
 
-**Firefox version of the extension is now deprecated.**
+# Development (Chrome)
+bun run dev
 
-### v2017.2.13.1
+# Development (Firefox)
+bun run dev:firefox
 
-- Updated most of the endpoints
-- We're now using WebSockets for song info
-- Added a random request button to the site
-- Removed unused code
+# Build (Chrome)
+bun run build
 
-### v2016.10.5.2
+# Build (Firefox)
+bun run build:firefox
 
-- Either Rem or Ram will now be displayed when opening the popup
-- Minor CSS changes
-- Reverted back to polling for info. SSE didn't really work out...
+# Lint
+bun run lint
+```
 
-### v2016.9.28.1
+## Architecture
 
-- Commented out a few console.logs
-- Minor CSS changes
-- No longer using setInterval to check for stats.json changes. Site is now using SSE.
-- Added LISTEN.moe Favorites support into the extension
+```
+src/
+├── components/          # Vue components (AlbumArt, NowPlaying, PlayerControls, etc.)
+├── composables/         # Vue composables (useRadioState, useSongProgress)
+├── entrypoints/
+│   ├── background.ts    # Service worker / background script
+│   ├── offscreen/       # Chrome MV3 offscreen document for audio playback
+│   └── popup/           # Popup UI entry point
+├── types/               # TypeScript interfaces and message types
+└── utils/               # Shared utilities (websocket, storage, graphql, etc.)
+```
 
-### v2016.8.26.1
-
-- Minor CSS changes.
-- Removed most console.logs()
-- Made changes to how the "Requested by" appears. No longer using jQuery.html() since it posed as a major security risk.
-- Base for History and Favorites features.
-
-### v2016.8.22.1
-
-- Firefox Compatibility
-
-  Requires Firefox version 48 or higher
-
-### v2016.8.21.2
-
-- Added webRequest and webRequestBlocking permissions
-
-  This will allow the extension to modify the UserAgent for requests coming from the extension so the Server can identify Extension users from normal site users.
-
-### v2016.8.21.1
-
-- Removed Custom Checkbox since I didn't like how it looked
-- Made CSS changes that @kanadeko requested
-- Made some ajustments to the JS to accommodate the CSS changes
-
-### v2016.8.20.1
-
-- Initial Release
+- **Chrome**: MV3 service worker + offscreen document for audio
+- **Firefox**: MV2 background page with direct audio access
