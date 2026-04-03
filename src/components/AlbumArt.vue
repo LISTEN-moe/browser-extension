@@ -15,7 +15,7 @@
 				alt="Album art"
 				class="cover">
 			<div v-else key="placeholder" class="placeholder">
-				<Music2 :size="28" />
+				<Music :size="28" />
 			</div>
 		</Transition>
 	</component>
@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { Music2 } from '@lucide/vue';
+import { Music } from '@lucide/vue';
 import type { Song } from '@/types';
 
 const props = defineProps<{
