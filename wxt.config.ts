@@ -2,7 +2,7 @@ import { defineConfig } from 'wxt';
 
 export default defineConfig({
 	srcDir: 'src',
-	modules: ['@wxt-dev/module-vue', '@wxt-dev/webextension-polyfill'],
+	modules: ['@wxt-dev/module-vue'],
 	manifest: ({ browser }) => {
 		const shared = {
 			name: 'LISTEN.moe',
