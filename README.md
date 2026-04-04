@@ -7,6 +7,9 @@
 		<a href="https://chrome.google.com/webstore/detail/listenmoe/bjhaeboalljjbggiljjokojcedhmkfoa?hl=en" target="_blank">
 			<img src="https://img.shields.io/chrome-web-store/v/bjhaeboalljjbggiljjokojcedhmkfoa.svg?style=flat-square&maxAge=3600" alt="Chrome Web Store">
 		</a>
+		<a href="https://microsoftedge.microsoft.com/addons/detail/iknjafjajhaoecjbifioofmfolijgioo" target="_blank">
+			<img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fiknjafjajhaoecjbifioofmfolijgioo&query=%24.version&label=edge%20add-ons&style=flat-square&prefix=v" alt="Edge Add-ons">
+		</a>
 		<a href="https://addons.mozilla.org/en-US/firefox/addon/listen-moe-extension/" target="_blank">
 			<img src="https://img.shields.io/amo/v/listen-moe-extension.svg?style=flat-square&maxAge=3600" alt="Firefox Addons">
 		</a>
