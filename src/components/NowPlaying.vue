@@ -242,7 +242,7 @@ watch(() => props.data?.song.id, () => {
 	artistScroll.reset();
 	titleScroll.scheduleAutoScroll();
 	artistScroll.scheduleAutoScroll();
-});
+}, { immediate: true });
 
 onUnmounted(() => {
 	titleScroll.cleanup();
